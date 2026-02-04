@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K-Medoids Clustering - Study Guide</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f6f8;
+        }
+        .nav-back {
+            display: inline-block;
+            margin-bottom: 20px;
+            text-decoration: none;
+            color: #666;
+            font-weight: 500;
+        }
+        .nav-back:hover { color: #0056b3; }
+        
+        h1 { 
+            border-bottom: 3px solid #0056b3; 
+            padding-bottom: 15px; 
+            color: #2c3e50; 
+            background: white;
+            padding: 20px;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 0;
+        }
+
+        section {
+            background: white;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        h2 { color: #0056b3; margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        h3 { color: #444; margin-top: 25px; font-size: 1.1rem; font-weight: 700; border-left: 4px solid #0056b3; padding-left: 10px;}
+
+        /* Math Boxes */
+        .math-box {
+            background-color: #eef6fc;
+            border: 1px solid #cce5ff;
+            padding: 15px;
+            font-family: "Courier New", monospace;
+            margin: 10px 0;
+            font-size: 0.95rem;
+            border-radius: 5px;
+        }
+        
+        /* Tables */
+        table { border-collapse: collapse; width: 100%; margin: 15px 0; font-size: 0.85rem; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        th { background-color: #f8f9fa; color: #333; }
+        
+        .medoid-highlight { background-color: #fff3cd; font-weight: bold; border: 2px solid #ffc107; }
+        .cluster-1 { color: #0056b3; font-weight: bold; }
+        .cluster-2 { color: #d35400; font-weight: bold; }
+
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="nav-back">← Back to Topics</a>
+
+    <h1>K-Medoids Clustering (PAM Algorithm)</h1>
+    <p>A clustering algorithm similar to K-Means, but uses actual data points ("Medoids") as centers instead of calculated averages.</p>
+
+    <!-- THEORY -->
+    <section>
+        <h2>1. K-Means vs. K-Medoids</h2>
+        <table>
+            <tr>
+                <th>Feature</th>
+                <th>K-Means</th>
+                <th>K-Medoids</th>
+            </tr>
+            <tr>
+                <td><strong>Center</strong></td>
+                <td>Mean (Average of points)</td>
+                <td>Medoid (Actual point in dataset)</td>
+            </tr>
+            <tr>
+                <td><strong>Distance</strong></td>
+                <td>Euclidean Distance</td>
+                <td>Manhattan Distance</td>
+            </tr>
+            <tr>
+                <td><strong>Outliers</strong></td>
+                <td>Sensitive to outliers</td>
+                <td><strong>Robust</strong> (Handles outliers well)</td>
+            </tr>
+        </table>
+        
+        <div class="math-box">
+            <strong>Manhattan Distance Formula:</strong><br>
+            dist = |x₁ - x₂| + |y₁ - y₂|
+        </div>
+    </section>
+
+    <!-- DATASET -->
+    <section>
+        <h2>2. The Dataset</h2>
+        <div style="display:flex; gap:20px;">
+            <table style="width:200px;">
+                <tr><th>i</th><th>x</th><th>y</th></tr>
+                <tr><td>X1</td><td>2</td><td>6</td></tr>
+                <tr><td>X2</td><td>3</td><td>4</td></tr>
+                <tr><td>X3</td><td>3</td><td>8</td></tr>
+                <tr><td>X4</td><td>4</td><td>7</td></tr>
+                <tr><td>X5</td><td>6</td><td>2</td></tr>
+            </table>
+            <table style="width:200px;">
+                <tr><th>i</th><th>x</th><th>y</th></tr>
+                <tr><td>X6</td><td>6</td><td>4</td></tr>
+                <tr><td>X7</td><td>7</td><td>3</td></tr>
+                <tr><td>X8</td><td>7</td><td>4</td></tr>
+                <tr><td>X9</td><td>8</td><td>5</td></tr>
+                <tr><td>X10</td><td>7</td><td>6</td></tr>
+            </table>
+        </div>
+    </section>
+
+    <!-- STEP 1 & 2 -->
+    <section>
+        <h2>3. Step 1: Initial Selection (Total Cost = 20)</h2>
+        <p>Randomly select two medoids: <strong>C1 = X2 (3,4)</strong> and <strong>C2 = X8 (7,4)</strong>.</p>
+        
+        <h3>Distance Calculation (Manhattan)</h3>
+        <p>Calculate distance from every point to C1 and C2. Assign to the closest.</p>
+        
+        <div class="math-box">
+            Example for X1 (2,6):<br>
+            Dist to C1(3,4) = |2-3| + |6-4| = 1 + 2 = <strong>3</strong><br>
+            Dist to C2(7,4) = |2-7| + |6-4| = 5 + 2 = 7<br>
+            <em>3 < 7, so X1 belongs to C1.</em>
+        </div>
+
+        <table>
+            <tr>
+                <th>Point</th>
+                <th>Dist to C1 (3,4)</th>
+                <th>Dist to C2 (7,4)</th>
+                <th>Cluster</th>
+                <th>Cost (Min Dist)</th>
+            </tr>
+            <tr><td>X1</td><td>3</td><td>7</td><td class="cluster-1">C1</td><td>3</td></tr>
+            <tr class="medoid-highlight"><td>X2</td><td>0</td><td>4</td><td class="cluster-1">C1</td><td>0</td></tr>
+            <tr><td>X3</td><td>4</td><td>8</td><td class="cluster-1">C1</td><td>4</td></tr>
+            <tr><td>X4</td><td>4</td><td>6</td><td class="cluster-1">C1</td><td>4</td></tr>
+            <tr><td>X5</td><td>5</td><td>3</td><td class="cluster-2">C2</td><td>3</td></tr>
+            <tr><td>X6</td><td>3</td><td>1</td><td class="cluster-2">C2</td><td>1</td></tr>
+            <tr><td>X7</td><td>5</td><td>1</td><td class="cluster-2">C2</td><td>1</td></tr>
+            <tr class="medoid-highlight"><td>X8</td><td>4</td><td>0</td><td class="cluster-2">C2</td><td>0</td></tr>
+            <tr><td>X9</td><td>6</td><td>2</td><td class="cluster-2">C2</td><td>2</td></tr>
+            <tr><td>X10</td><td>6</td><td>2</td><td class="cluster-2">C2</td><td>2</td></tr>
+            <tr>
+                <td colspan="4" style="text-align:right;"><strong>Total Cost:</strong></td>
+                <td><strong>20</strong></td>
+            </tr>
+        </table>
+    </section>
+
+    <!-- STEP 3 & 4 -->
+    <section>
+        <h2>4. Step 2: Try Swapping Medoids (Total Cost = 22)</h2>
+        <p>Algorithm Strategy: Randomly select a non-medoid point <strong>O = X7 (7,3)</strong> and try swapping it with <strong>C2</strong>.</p>
+        <p>New Medoids: <strong>C1 (3,4)</strong> and <strong>O (7,3)</strong>.</p>
+
+        <table>
+            <tr>
+                <th>Point</th>
+                <th>Dist to C1 (3,4)</th>
+                <th>Dist to O (7,3)</th>
+                <th>Cluster</th>
+                <th>Cost (Min Dist)</th>
+            </tr>
+            <tr><td>X1</td><td>3</td><td>8</td><td class="cluster-1">C1</td><td>3</td></tr>
+            <tr><td>X2</td><td>0</td><td>5</td><td class="cluster-1">C1</td><td>0</td></tr>
+            <tr><td>X3</td><td>4</td><td>9</td><td class="cluster-1">C1</td><td>4</td></tr>
+            <tr><td>X4</td><td>4</td><td>7</td><td class="cluster-1">C1</td><td>4</td></tr>
+            <tr><td>X5</td><td>5</td><td>2</td><td class="cluster-2">O</td><td>2</td></tr>
+            <tr><td>X6</td><td>3</td><td>2</td><td class="cluster-2">O</td><td>2</td></tr>
+            <tr class="medoid-highlight"><td>X7</td><td>5</td><td>0</td><td class="cluster-2">O</td><td>0</td></tr>
+            <tr><td>X8</td><td>4</td><td>1</td><td class="cluster-2">O</td><td>1</td></tr>
+            <tr><td>X9</td><td>6</td><td>3</td><td class="cluster-2">O</td><td>3</td></tr>
+            <tr><td>X10</td><td>6</td><td>3</td><td class="cluster-2">O</td><td>3</td></tr>
+            <tr>
+                <td colspan="4" style="text-align:right;"><strong>New Total Cost:</strong></td>
+                <td><strong>22</strong></td>
+            </tr>
+        </table>
+    </section>
+
+    <!-- CONCLUSION -->
+    <section>
+        <h2>5. The Decision</h2>
+        <div class="math-box">
+            Swap Cost (S) = New Total Cost - Previous Total Cost<br>
+            S = 22 - 20<br>
+            <strong>S = +2</strong>
+        </div>
+
+        <h3>Conclusion:</h3>
+        <p>Since the cost increased (S > 0), swapping C2 with O was <strong>NOT a good idea</strong>.</p>
+        <p>We reject the swap and keep the original medoids: <strong>C1(3,4) and C2(7,4)</strong>.</p>
+    </section>
+
+    <footer>
+        <p style="text-align:center; color:#888; font-size:0.8rem; margin-top:50px;">© 2024 Data Mining Study Guide</p>
+    </footer>
+
+</body>
+</html>
