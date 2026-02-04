@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bayesian Classification - Study Guide</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f6f8;
+        }
+        .nav-back {
+            display: inline-block;
+            margin-bottom: 20px;
+            text-decoration: none;
+            color: #666;
+            font-weight: 500;
+        }
+        .nav-back:hover { color: #0056b3; }
+        
+        h1 { 
+            border-bottom: 3px solid #0056b3; 
+            padding-bottom: 15px; 
+            color: #2c3e50; 
+            background: white;
+            padding: 20px;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 0;
+        }
+
+        section {
+            background: white;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        h2 { color: #0056b3; margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        h3 { color: #444; margin-top: 25px; font-size: 1.1rem; font-weight: 700; border-left: 4px solid #0056b3; padding-left: 10px;}
+
+        /* Math Boxes */
+        .math-box {
+            background-color: #eef6fc;
+            border: 1px solid #cce5ff;
+            padding: 15px;
+            font-family: "Courier New", monospace;
+            margin: 10px 0;
+            font-size: 0.95rem;
+            border-radius: 5px;
+        }
+        
+        /* Tables */
+        table { border-collapse: collapse; width: 100%; margin: 15px 0; font-size: 0.85rem; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        th { background-color: #f8f9fa; color: #333; }
+        
+        .class-yes { color: #155724; background-color: #d4edda; font-weight: bold; }
+        .class-no { color: #721c24; background-color: #f8d7da; font-weight: bold; }
+        
+        .highlight { color: #d63384; font-weight: bold; }
+
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="nav-back">← Back to Topics</a>
+
+    <h1>Bayesian & Naïve Bayesian Classification</h1>
+    <p>A probabilistic classifier based on Bayes' theorem with the assumption of independence between features.</p>
+
+    <!-- FORMULA -->
+    <section>
+        <h2>1. The Formula</h2>
+        <div class="math-box">
+            <strong>Bayes Theorem:</strong><br>
+            P(Class | Data) = [ P(Data | Class) * P(Class) ] / P(Data)<br><br>
+            
+            <strong>Naïve Bayes Prediction:</strong><br>
+            Max { P(x₁|C)*P(x₂|C)... * P(C) }
+        </div>
+        <p>We calculate the probability for each class and pick the highest one.</p>
+    </section>
+
+    <!-- EXAMPLE 1: STANDARD NAIVE BAYES -->
+    <section>
+        <h2>2. Example: Will they buy a computer?</h2>
+        <p><strong>Dataset (from Page 6):</strong> 14 Records.</p>
+        <p><strong>Query Tuple (X):</strong> Age ≤ 30, Income = Medium, Student = Yes, Credit = Fair.</p>
+
+        <h3>Step A: Prior Probabilities P(C)</h3>
+        <p>Count how many people bought a computer (Yes) vs didn't (No).</p>
+        <div class="math-box">
+            Total Records = 14<br>
+            Class Yes (C1): 9 records &rarr; P(Yes) = 9/14<br>
+            Class No (C2): 5 records &rarr; P(No) = 5/14
+        </div>
+
+        <h3>Step B: Conditional Probabilities P(x|C)</h3>
+        <p>Calculate the probability of each attribute appearing in each class.</p>
+        
+        <table style="width:100%">
+            <tr>
+                <th>Attribute</th>
+                <th>For Class YES (Total 9)</th>
+                <th>For Class NO (Total 5)</th>
+            </tr>
+            <tr>
+                <td><strong>Age ≤ 30</strong></td>
+                <td>2 records (2/9)</td>
+                <td>3 records (3/5)</td>
+            </tr>
+            <tr>
+                <td><strong>Income = Medium</strong></td>
+                <td>4 records (4/9)</td>
+                <td>2 records (2/5)</td>
+            </tr>
+            <tr>
+                <td><strong>Student = Yes</strong></td>
+                <td>6 records (6/9)</td>
+                <td>1 record (1/5)</td>
+            </tr>
+            <tr>
+                <td><strong>Credit = Fair</strong></td>
+                <td>6 records (6/9)</td>
+                <td>2 records (2/5)</td>
+            </tr>
+        </table>
+
+        <h3>Step C: Final Calculation</h3>
+        <p>Multiply all probabilities together.</p>
+
+        <div class="math-box">
+            <strong>For Class YES:</strong><br>
+            P(X|Yes)*P(Yes) = (2/9 * 4/9 * 6/9 * 6/9) * (9/14)<br>
+            = 0.044 * 0.64<br>
+            = <span class="highlight">0.028</span>
+        </div>
+
+        <div class="math-box">
+            <strong>For Class NO:</strong><br>
+            P(X|No)*P(No) = (3/5 * 2/5 * 1/5 * 2/5) * (5/14)<br>
+            = 0.019 * 0.35<br>
+            = <span class="highlight">0.007</span>
+        </div>
+
+        <p class="class-yes">Prediction: YES (Buys Computer) because 0.028 > 0.007</p>
+    </section>
+
+    <!-- LAPLACIAN CORRECTION -->
+    <section>
+        <h2>3. Laplacian Correction (Smoothing)</h2>
+        <p><strong>The Problem:</strong> If an attribute count is 0, the whole probability becomes 0 (multiplication by zero).</p>
+        <p><strong>The Solution:</strong> Add 1 to the numerator and add <em>k</em> (number of distinct values) to the denominator.</p>
+        
+        <div class="math-box">
+            <strong>Formula:</strong><br>
+            P(x|C) = (Count + 1) / (Total_Class_Count + Distinct_Values)
+        </div>
+
+        <h3>Example from Notes (Page 10)</h3>
+        <p><strong>Query:</strong> Middle-Aged, Medium Income, Fair Credit.</p>
+        <p><strong>Issue:</strong> In Class "NO" (c2), there are <strong>0</strong> people who are "Middle Aged".</p>
+        
+        <table>
+            <tr>
+                <th>Calculation</th>
+                <th>Standard (Fails)</th>
+                <th>Laplacian (Corrected)</th>
+            </tr>
+            <tr>
+                <td><strong>P(Middle Aged | No)</strong></td>
+                <td>0 / 5 = <strong>0</strong></td>
+                <td>(0 + 1) / (5 + 3) = <strong>1/8</strong></td>
+            </tr>
+        </table>
+        <p><em>*Note: Denominator is 8 because Total(5) + Distinct Ages(3: Youth, Middle, Senior).</em></p>
+    </section>
+
+    <!-- TEXT CLASSIFICATION -->
+    <section>
+        <h2>4. Text Classification Example</h2>
+        <p>Using Naïve Bayes to classify documents as "Math" or "Computer" based on word counts.</p>
+
+        <h3>Data (Word Counts)</h3>
+        <table>
+            <tr><th>Doc ID</th><th>sqrt</th><th>bit</th><th>chip</th><th>Class</th></tr>
+            <tr><td>1</td><td>42</td><td>25</td><td>7</td><td>Math</td></tr>
+            <tr><td>2</td><td>10</td><td>28</td><td>45</td><td>Comp</td></tr>
+            <tr><td>3</td><td>11</td><td>25</td><td>22</td><td>Comp</td></tr>
+            <tr><td>4</td><td>33</td><td>40</td><td>8</td><td>Math</td></tr>
+            <tr><td>5</td><td>28</td><td>32</td><td>9</td><td>Math</td></tr>
+            <tr><td>6</td><td>8</td><td>22</td><td>30</td><td>Comp</td></tr>
+        </table>
+
+        <h3>Step A: Probability of Words given Class</h3>
+        <p>We calculate the probability of a word appearing in a specific class based on total word counts.</p>
+        
+        <div class="math-box">
+            <strong>Total Words in 'Comp' Docs (Rows 2,3,6):</strong><br>
+            (10+28+45) + (11+25+22) + (8+22+30) = <strong>201</strong><br><br>
+            
+            <strong>Total Words in 'Math' Docs (Rows 1,4,5):</strong><br>
+            (42+25+7) + (33+40+8) + (28+32+9) = <strong>224</strong>
+        </div>
+
+        <div class="math-box">
+            <strong>Word Probabilities for 'Comp':</strong><br>
+            P(sqrt | Comp) = (10+11+8) / 201 = <strong>0.144</strong><br>
+            P(bit | Comp) = (28+25+22) / 201 = <strong>0.373</strong><br>
+            P(chip | Comp) = (45+22+30) / 201 = <strong>0.483</strong>
+        </div>
+
+        <div class="math-box">
+            <strong>Word Probabilities for 'Math':</strong><br>
+            P(sqrt | Math) = (42+33+28) / 224 = <strong>0.459</strong><br>
+            P(bit | Math) = (25+40+32) / 224 = <strong>0.433</strong><br>
+            P(chip | Math) = (7+8+9) / 224 = <strong>0.107</strong>
+        </div>
+
+        <h3>Step B: Final Prediction</h3>
+        <p>Calculate P(X|Comp) vs P(X|Math) by multiplying the word probabilities found above.</p>
+        
+        <div class="math-box">
+            <strong>Score for Computer:</strong> 0.144 * 0.373 * 0.483 * P(Comp) = <strong>0.01295</strong><br>
+            <strong>Score for Math:</strong> 0.459 * 0.433 * 0.107 * P(Math) = <strong>0.01068</strong>
+        </div>
+
+        <p class="class-yes">Prediction: Computer Related Document.</p>
+    </section>
+
+    <footer>
+        <p style="text-align:center; color:#888; font-size:0.8rem; margin-top:50px;">© 2024 Data Mining Study Guide</p>
+    </footer>
+
+</body>
+</html>
