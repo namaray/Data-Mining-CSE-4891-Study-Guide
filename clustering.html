@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clustering & Classification - Study Guide</title>
+    <title>Clustering & Classification - Full Study Guide</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -12,7 +12,7 @@
             max-width: 900px;
             margin: 0 auto;
             padding: 20px;
-            background-color: #fff;
+            background-color: #f4f6f8;
         }
         .nav-back {
             display: inline-block;
@@ -23,68 +23,78 @@
         }
         .nav-back:hover { color: #0056b3; }
         
-        h1 { border-bottom: 2px solid #eaeaea; padding-bottom: 10px; color: #2c3e50; }
-        h2 { color: #0056b3; margin-top: 40px; }
-        h3 { color: #444; border-left: 4px solid #0056b3; padding-left: 10px; }
-        
-        .example-box {
-            background-color: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 8px;
+        h1 { 
+            border-bottom: 3px solid #0056b3; 
+            padding-bottom: 15px; 
+            color: #2c3e50; 
+            background: white;
             padding: 20px;
-            margin: 20px 0;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 0;
+        }
+        
+        section {
+            background: white;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        h2 { color: #0056b3; margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        h3 { color: #444; margin-top: 25px; font-size: 1.1rem; font-weight: 700;}
+        h4 { font-size: 1rem; color: #666; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px;}
+
+        /* Math and Calculation Boxes */
+        .math-box {
+            background-color: #eef6fc;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            font-family: "Courier New", monospace;
+            margin: 10px 0;
+            font-size: 0.9rem;
+        }
+        .note-box {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 10px;
+            font-size: 0.9rem;
+            margin: 10px 0;
         }
 
         /* Tables */
         table { border-collapse: collapse; width: 100%; margin: 15px 0; font-size: 0.9rem; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
-        th { background-color: #f1f3f5; }
-
-        /* Dendrogram Visualization Styles */
-        .dendro-container {
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            height: 300px;
-            padding: 20px;
-            background: #fff;
-            border: 1px solid #ddd;
-            margin-top: 20px;
-            position: relative;
-        }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+        th { background-color: #f8f9fa; color: #333; }
+        tr:nth-child(even) { background-color: #fcfcfc; }
         
+        .highlight-cell { background-color: #d4edda; font-weight: bold; color: #155724; }
+        
+        /* Dendrogram Styles */
+        .dendro-wrapper {
+            background: white;
+            padding: 20px;
+            border: 1px solid #ddd;
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .dendro-container {
+            position: relative;
+            height: 300px;
+            width: 400px;
+        }
         .dendro-label {
             position: absolute;
             bottom: -30px;
             text-align: center;
             width: 60px;
             font-weight: bold;
-            font-size: 0.9rem;
-        }
-
-        /* Drawing the lines using borders on empty divs */
-        .branch {
-            position: absolute;
-            border-top: 2px solid #333;
-            border-left: 2px solid #333;
-            border-right: 2px solid #333;
-        }
-        
-        .stem {
-            position: absolute;
-            border-left: 2px solid #333;
-        }
-
-        .y-axis {
-            position: absolute;
-            right: 10px;
-            top: 0;
-            bottom: 0;
-            width: 40px;
-            border-left: 1px dashed #ccc;
             font-size: 0.8rem;
-            color: #666;
         }
+        .branch { position: absolute; border-top: 2px solid #333; border-left: 2px solid #333; border-right: 2px solid #333; }
+        .stem { position: absolute; border-left: 2px solid #333; }
+        .y-axis { position: absolute; right: -40px; top: 0; bottom: 0; width: 40px; border-left: 1px dashed #ccc; font-size: 0.7rem; color: #666; }
         .y-mark { position: absolute; right: 5px; }
 
     </style>
@@ -93,65 +103,119 @@
 
     <a href="index.html" class="nav-back">← Back to Topics</a>
 
-    <h1>Clustering & Classification Algorithms</h1>
+    <h1>Clustering & Classification: Full Process</h1>
 
-    <!-- 1. K-MEANS -->
+    <!-- TOPIC 1: K-MEANS -->
     <section>
-        <h2>1. K-Means Clustering</h2>
-        <p><strong>Goal:</strong> Group data into <em>K</em> clusters based on similarity (Euclidean Distance). In the notes, K=3.</p>
+        <h2>1. K-Means Clustering Standard Algorithm</h2>
+        <p><strong>Task:</strong> Determine 3 clusters from the dataset using Euclidean Distance.</p>
         
-        <div class="example-box">
-            <h3>The Example Data</h3>
-            <table>
-                <tr><th>Point</th><th>Area (x)</th><th>Perimeter (y)</th><th>Compactness (z)</th></tr>
-                <tr><td>A</td><td>15.26</td><td>14.84</td><td>0.871</td></tr>
-                <tr><td>B</td><td>14.88</td><td>14.57</td><td>0.881</td></tr>
-                <tr><td>C</td><td>14.29</td><td>14.09</td><td>0.905</td></tr>
-            </table>
-            <p><em>...and so on for D, E, F.</em></p>
+        <h3>Step 1: The Dataset</h3>
+        <p>Let Area = x, Perimeter = y, Compactness = z.</p>
+        <table>
+            <tr><th>Point</th><th>x</th><th>y</th><th>z</th></tr>
+            <tr><td>A</td><td>15.26</td><td>14.84</td><td>0.871</td></tr>
+            <tr><td>B</td><td>14.88</td><td>14.57</td><td>0.881</td></tr>
+            <tr><td>C</td><td>14.29</td><td>14.09</td><td>0.905</td></tr>
+            <tr><td>D</td><td>13.84</td><td>13.94</td><td>0.895</td></tr>
+            <tr><td>E</td><td>16.14</td><td>14.99</td><td>0.903</td></tr>
+            <tr><td>F</td><td>14.38</td><td>14.21</td><td>0.895</td></tr>
+        </table>
 
-            <h3>The Algorithm Steps</h3>
-            <ol>
-                <li><strong>Initialization:</strong> Select 3 random points as "Centroids" (Leaders). Notes selected B, D, and F.</li>
-                <li><strong>Assignment (Iteration 1):</strong> Measure distance from every point to B, D, and F.
-                    <br><code>Dist = √((x2-x1)² + (y2-y1)² + (z2-z1)²)</code>
-                    <br>Assign point to the closest leader.
-                </li>
-                <li><strong>Update:</strong> Calculate the <strong>Average</strong> of the new groups to find new Centroids.</li>
-                <li><strong>Repeat:</strong> Keep measuring and moving centroids until they stop changing.</li>
-            </ol>
+        <h3>Step 2: Initialization</h3>
+        <p>The notes selected 3 initial centroids arbitrarily:</p>
+        <ul>
+            <li><strong>Class I (C1):</strong> Point B (14.88, 14.57, 0.881)</li>
+            <li><strong>Class II (C2):</strong> Point D (13.84, 13.94, 0.895)</li>
+            <li><strong>Class III (C3):</strong> Point F (14.38, 14.21, 0.895)</li>
+        </ul>
+
+        <h3>Step 3: Iteration 1 (Calculations)</h3>
+        <p>We calculate the Euclidean Distance from every point to the 3 centroids.</p>
+        
+        <div class="math-box">
+            <strong>Formula:</strong> d = √[(x₂-x₁)² + (y₂-y₁)² + (z₂-z₁)²]
+            <br><br>
+            <strong>Example Calculation for Point A vs Class I (Point B):</strong><br>
+            d = √[(15.26 - 14.88)² + (14.84 - 14.57)² + (0.871 - 0.881)²]<br>
+            d = √[(0.38)² + (0.27)² + (-0.01)²]<br>
+            d = √[0.1444 + 0.0729 + 0.0001] = √0.2174 = <strong>0.466</strong>
         </div>
+
+        <h4>Iteration 1 Table Results (from Page 2)</h4>
+        <table>
+            <tr>
+                <th>Data</th>
+                <th>Dist to B (Class I)</th>
+                <th>Dist to D (Class II)</th>
+                <th>Dist to F (Class III)</th>
+                <th>Assigned Class</th>
+            </tr>
+            <tr><td>A</td><td class="highlight-cell">0.466</td><td>1.68</td><td>1.08</td><td>I</td></tr>
+            <tr><td>B</td><td class="highlight-cell">0</td><td>1.216</td><td>0.616</td><td>I</td></tr>
+            <tr><td>C</td><td>0.76</td><td>0.47</td><td class="highlight-cell">0.15</td><td>III</td></tr>
+            <tr><td>D</td><td>1.216</td><td class="highlight-cell">0</td><td>0.60</td><td>II</td></tr>
+            <tr><td>E</td><td class="highlight-cell">1.32</td><td>2.52</td><td>1.92</td><td>I</td></tr>
+            <tr><td>F</td><td>0.616</td><td>0.60</td><td class="highlight-cell">0</td><td>III</td></tr>
+        </table>
+
+        <h3>Step 4: Update Centroids</h3>
+        <p>Now we calculate the mean (average) of the members of each new class.</p>
+        <div class="note-box">
+            <strong>Class I Members:</strong> A, B, E<br>
+            <strong>New Centroid (x):</strong> (15.26 + 14.88 + 16.14) / 3 = 15.43<br>
+            <strong>New Centroid (y):</strong> (14.84 + 14.57 + 14.99) / 3 = 14.8<br>
+            <strong>New Centroid (z):</strong> (0.871 + 0.881 + 0.903) / 3 = 0.885
+        </div>
+        <p><strong>New Centroids:</strong><br>
+        Class I: (15.43, 14.8, 0.885)<br>
+        Class II: D (Unchanged because it's alone)<br>
+        Class III: Average of C & F</p>
     </section>
 
-    <!-- 2. HIERARCHICAL -->
+    <!-- TOPIC 2: HIERARCHICAL -->
     <section>
-        <h2>2. Hierarchical Clustering</h2>
-        <p><strong>Goal:</strong> Build a tree structure (Dendrogram) linking items by distance.</p>
-        <p><strong>Methods:</strong>
-            <ul>
-                <li><strong>Single Linkage:</strong> Min distance (Nearest Neighbor).</li>
-                <li><strong>Complete Linkage:</strong> Max distance (Farthest Neighbor).</li>
-            </ul>
-        </p>
+        <h2>2. Hierarchical Clustering (Single Linkage)</h2>
+        <p><strong>Task:</strong> Group students based on Score (x) and Height (y) using Single Linkage (Minimum Distance).</p>
 
-        <div class="example-box">
-            <h3>Visualizing the Example (Page 8)</h3>
-            <p><strong>Method:</strong> Single Linkage on Student Data (Scores vs Height).</p>
-            <p><strong>Process:</strong></p>
-            <ol>
-                <li>Julie & John were closest (0.5) &rarr; Merged.</li>
-                <li>Mathew was closest to the (Julie/John) group &rarr; Merged.</li>
-                <li>Ryan was next &rarr; Merged.</li>
-                <li>Prince was next &rarr; Merged.</li>
-                <li>Bob was the furthest away &rarr; Merged last.</li>
-            </ol>
+        <h3>Step 1: Input Distance Matrix</h3>
+        <p>Distance between every student (calculated via Euclidean formula).</p>
+        <table>
+            <tr><th></th><th>Julie</th><th>John</th><th>Ryan</th><th>Bob</th><th>Prince</th><th>Mathew</th></tr>
+            <tr><td>Julie</td><td>0</td><td><strong>0.5</strong></td><td>2.1</td><td>7.03</td><td>4.01</td><td>1.67</td></tr>
+            <tr><td>John</td><td></td><td>0</td><td>2.01</td><td>7.1</td><td>4.0</td><td>1.00</td></tr>
+            <tr><td>Ryan</td><td></td><td></td><td>0</td><td>5.1</td><td>2.04</td><td>3.00</td></tr>
+            <tr><td>...</td><td></td><td></td><td></td><td>...</td><td>...</td><td>...</td></tr>
+        </table>
 
-            <!-- Custom CSS Dendrogram -->
+        <div class="note-box">
+            <strong>Action:</strong> Find the smallest number in the table.<br>
+            <strong>Result:</strong> 0.5 (Julie & John). <br>
+            <strong>Combine:</strong> Julie and John become one cluster {Julie, John}.
+        </div>
+
+        <h3>Step 2: Update Matrix (Iteration 1)</h3>
+        <p>We need to find the distance from the new group {Julie/John} to everyone else. <br>
+        <strong>Rule (Single Linkage):</strong> Use the MINIMUM distance.</p>
+        
+        <div class="math-box">
+            <strong>Distance({J,J}, Ryan)</strong> = min( Dist(Julie,Ryan), Dist(John,Ryan) )<br>
+            = min( 2.1, 2.01 )<br>
+            = <strong>2.01</strong>
+        </div>
+
+        <h3>Step 3: Iteration 2</h3>
+        <p>Looking at the updated matrix (Page 6), the smallest value is now <strong>1.00</strong> (between Mathew and John). But John is already in a group. So we merge Mathew into the group.</p>
+        <p><strong>Cluster is now:</strong> {Julie, John, Mathew}</p>
+
+        <h3>Final Result: The Dendrogram</h3>
+        <p>This visualization shows the order of merging based on the handwritten notes (Page 8).</p>
+
+        <div class="dendro-wrapper">
             <div class="dendro-container">
-                
-                <!-- Y Axis Labels -->
+                <!-- Y Axis -->
                 <div class="y-axis">
-                    <div class="y-mark" style="bottom: 100%;">8.0</div>
+                    <div class="y-mark" style="bottom: 100%;">7.03</div>
                     <div class="y-mark" style="bottom: 70%;">3.16</div>
                     <div class="y-mark" style="bottom: 50%;">2.04</div>
                     <div class="y-mark" style="bottom: 30%;">2.01</div>
@@ -159,29 +223,27 @@
                     <div class="y-mark" style="bottom: 5%;">0.5</div>
                 </div>
 
-                <!-- The Tree Structure (Positioning based on percentage of height) -->
-                
-                <!-- Julie & John join at low height -->
+                <!-- Tree -->
+                <!-- Julie & John -->
                 <div class="branch" style="bottom: 20px; left: 50px; width: 60px; height: 20px;"></div>
-                <div class="stem" style="bottom: 0; left: 50px; height: 20px;"></div> <!-- Julie Stem -->
-                <div class="stem" style="bottom: 0; left: 110px; height: 20px;"></div> <!-- John Stem -->
+                <div class="stem" style="bottom: 0; left: 50px; height: 20px;"></div>
+                <div class="stem" style="bottom: 0; left: 110px; height: 20px;"></div>
 
-                <!-- (J+J) joins Mathew -->
+                <!-- + Mathew -->
                 <div class="branch" style="bottom: 40px; left: 80px; width: 80px; height: 40px;"></div>
-                <div class="stem" style="bottom: 0; left: 160px; height: 40px;"></div> <!-- Mathew Stem -->
+                <div class="stem" style="bottom: 0; left: 160px; height: 40px;"></div>
 
-                <!-- Group joins Ryan -->
+                <!-- + Ryan -->
                 <div class="branch" style="bottom: 80px; left: 120px; width: 100px; height: 50px;"></div>
-                <div class="stem" style="bottom: 0; left: 220px; height: 80px;"></div> <!-- Ryan Stem -->
+                <div class="stem" style="bottom: 0; left: 220px; height: 80px;"></div>
 
-                <!-- Group joins Prince -->
+                <!-- + Prince -->
                 <div class="branch" style="bottom: 130px; left: 170px; width: 110px; height: 50px;"></div>
-                <div class="stem" style="bottom: 0; left: 280px; height: 130px;"></div> <!-- Prince Stem -->
+                <div class="stem" style="bottom: 0; left: 280px; height: 130px;"></div>
 
-                <!-- Group joins Bob -->
+                <!-- + Bob -->
                 <div class="branch" style="bottom: 180px; left: 225px; width: 115px; height: 60px;"></div>
-                <div class="stem" style="bottom: 0; left: 340px; height: 180px;"></div> <!-- Bob Stem -->
-
+                <div class="stem" style="bottom: 0; left: 340px; height: 180px;"></div>
 
                 <!-- Labels -->
                 <div class="dendro-label" style="left: 20px;">Julie</div>
@@ -190,70 +252,80 @@
                 <div class="dendro-label" style="left: 190px;">Ryan</div>
                 <div class="dendro-label" style="left: 250px;">Prince</div>
                 <div class="dendro-label" style="left: 310px;">Bob</div>
-
             </div>
-            <p style="text-align: center; font-size: 0.8rem; color: #666;">Figure: Dendrogram based on Single Linkage Distance</p>
         </div>
     </section>
 
-    <!-- 3. DECISION TREES -->
+    <!-- TOPIC 3: COBWEB -->
     <section>
-        <h2>3. Decision Trees</h2>
-        <p><strong>Goal:</strong> Predict a class label by asking a series of Yes/No questions.</p>
-        <p><strong>Example (Page 9):</strong> Animal Classification.</p>
-        <ul>
-            <li>Is it Warm Blooded? &rarr; No.</li>
-            <li>Is it Cold Blooded? &rarr; Yes.</li>
-            <li>Does it have scales? &rarr; Yes.</li>
-            <li>Does it give live birth? &rarr; No.</li>
-            <li><strong>Prediction:</strong> Reptile.</li>
-        </ul>
-
-        <h3>The Confusion Matrix</h3>
-        <p>Used to check accuracy.</p>
+        <h2>3. COBWEB Clustering</h2>
+        <p><strong>Task:</strong> Build a classification tree using Probability Tables (Categorical Data).</p>
+        
+        <h3>Step 1: Root Node (N1)</h3>
+        <p>The root contains all 4 items (a, b, c, d). We calculate P(Value | Class).</p>
         <table>
+            <tr><th colspan="2">P(N1) Total = 4/4</th><th>P(v|c)</th></tr>
+            <tr><td rowspan="2"><strong>Tails</strong></td><td>1</td><td>0.50 (2/4)</td></tr>
+            <tr><td>2</td><td>0.50 (2/4)</td></tr>
+            <tr><td rowspan="2"><strong>Color</strong></td><td>White</td><td>0.50</td></tr>
+            <tr><td>Black</td><td>0.50</td></tr>
+        </table>
+        <p class="note-box"><em>Observation:</em> This is not "pure" (values are 50/50). We need to split.</p>
+
+        <h3>Step 2: Splitting (Update)</h3>
+        <p>The algorithm splits the data into two branches (N2 and N6) to improve clustering.</p>
+        
+        <div style="display:flex; gap:20px; flex-wrap:wrap;">
+            <div style="flex:1;">
+                <h4>Node N2 (Left) - Item a</h4>
+                <table>
+                    <tr><th>Attr</th><th>Val</th><th>Prob</th></tr>
+                    <tr><td>Tails</td><td>1</td><td>1.0</td></tr>
+                    <tr><td>Color</td><td>White</td><td>1.0</td></tr>
+                </table>
+                <p>Contains item: <strong>a</strong></p>
+            </div>
+            <div style="flex:1;">
+                <h4>Node N6 (Right) - Item b</h4>
+                <table>
+                    <tr><th>Attr</th><th>Val</th><th>Prob</th></tr>
+                    <tr><td>Tails</td><td>2</td><td>1.0</td></tr>
+                    <tr><td>Color</td><td>White</td><td>1.0</td></tr>
+                </table>
+                <p>Contains item: <strong>b</strong></p>
+            </div>
+        </div>
+        <p>The algorithm continues splitting until the probabilities in the leaf nodes are close to 1.0 (Absolute Clustering).</p>
+    </section>
+
+    <!-- TOPIC 4: DECISION TREES -->
+    <section>
+        <h2>4. Decision Trees & Confusion Matrix</h2>
+        
+        <h3>Confusion Matrix (Grading the Model)</h3>
+        <p>A table used to evaluate how good a classification model is (Page 10).</p>
+        
+        <table style="max-width: 600px; margin: 0 auto;">
             <tr>
-                <th></th>
-                <th>Predicted YES</th>
-                <th>Predicted NO</th>
+                <th style="background:none; border:none;"></th>
+                <th>Predicted POSITIVE (P)</th>
+                <th>Predicted NEGATIVE (N)</th>
             </tr>
             <tr>
-                <th>Actual YES</th>
-                <td><strong>True Positive</strong></td>
-                <td>False Negative (Type II)</td>
+                <th>Actual POSITIVE</th>
+                <td class="highlight-cell">True Positive (TP)<br><em>Correct!</em></td>
+                <td>False Negative (FN)<br><em>Type II Error</em></td>
             </tr>
             <tr>
-                <th>Actual NO</th>
-                <td>False Positive (Type I)</td>
-                <td><strong>True Negative</strong></td>
+                <th>Actual NEGATIVE</th>
+                <td>False Positive (FP)<br><em>Type I Error</em></td>
+                <td class="highlight-cell">True Negative (TN)<br><em>Correct!</em></td>
             </tr>
         </table>
     </section>
 
-    <!-- 4. COBWEB -->
-    <section>
-        <h2>4. COBWEB Clustering</h2>
-        <p><strong>Goal:</strong> Incremental clustering for <strong>Categorical Data</strong> (Non-numeric).</p>
-        <p>Unlike K-Means (which uses Distance), COBWEB uses <strong>Probability</strong>.</p>
-        
-        <div class="example-box">
-            <h3>How it works (from Notes)</h3>
-            <p>1. Start with a Root Node containing all data.</p>
-            <p>2. Calculate probabilities for every feature.</p>
-            <code>Example: P(Color = White) = 2/4</code>
-            <p>3. Split the node if the data isn't "pure" enough.</p>
-            <p>4. Create a hierarchy of probabilities:</p>
-            <ul>
-                <li><strong>Root:</strong> 50% White, 50% Black</li>
-                <li>&rarr; <strong>Child Node 1:</strong> 100% White (contains items a, b)</li>
-                <li>&rarr; <strong>Child Node 2:</strong> 100% Black (contains items c, d)</li>
-            </ul>
-        </div>
-    </section>
-
-    <br><br>
     <footer>
-        <p style="text-align:center; color:#888; font-size:0.8rem;">© 2024 Data Mining Study Guide</p>
+        <p style="text-align:center; color:#888; font-size:0.8rem; margin-top:50px;">© 2024 Data Mining Study Guide</p>
     </footer>
 
 </body>
