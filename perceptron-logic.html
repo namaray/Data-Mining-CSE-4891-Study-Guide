@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perceptron Logic Gates - Study Guide</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f6f8;
+        }
+        .nav-back {
+            display: inline-block;
+            margin-bottom: 20px;
+            text-decoration: none;
+            color: #666;
+            font-weight: 500;
+        }
+        .nav-back:hover { color: #0056b3; }
+        
+        h1 { 
+            border-bottom: 3px solid #0056b3; 
+            padding-bottom: 15px; 
+            color: #2c3e50; 
+            background: white;
+            padding: 20px;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 0;
+        }
+
+        section {
+            background: white;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        h2 { color: #0056b3; margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        h3 { color: #444; margin-top: 25px; font-size: 1.1rem; font-weight: 700; border-left: 4px solid #0056b3; padding-left: 10px;}
+
+        /* Rules Box */
+        .rule-box {
+            background-color: #e3f2fd;
+            border: 1px solid #bbdefb;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .rule-box strong { color: #0d47a1; }
+
+        /* Tables */
+        table { border-collapse: collapse; width: 100%; margin: 15px 0; font-size: 0.85rem; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        th { background-color: #f8f9fa; color: #333; }
+        
+        /* Status Colors */
+        .action-update { background-color: #fff3cd; color: #856404; font-weight: bold; }
+        .action-ok { color: #155724; font-weight: bold; }
+        .val-change { color: #d63384; font-weight: bold; }
+
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="nav-back">← Back to Topics</a>
+
+    <h1>Perceptron Logic Gates (OR & AND)</h1>
+    <p>How to manually calculate the iterations to train a simple neural network.</p>
+
+    <!-- THE LEARNING RULES -->
+    <div class="rule-box">
+        <h3>🧠 The Learning Rules (from your notes)</h3>
+        <p><strong>Activation (Act):</strong> Sum of (Input × Weight). If Act > Threshold, Output is 1. Else 0.</p>
+        <hr>
+        <p><strong>Case 1: Output matches Expected?</strong> <br>
+        &rarr; <strong>Do Nothing.</strong></p>
+        
+        <p><strong>Case 2: Output is 0, Expected is 1 (False Negative)?</strong> <br>
+        &rarr; <strong>INCREASE</strong> active weights by Learning Rate (c).</p>
+        
+        <p><strong>Case 3: Output is 1, Expected is 0 (False Positive)?</strong> <br>
+        &rarr; <strong>DECREASE</strong> active weights by Learning Rate (c).</p>
+        
+        <p><em>*Active Weight: A weight connected to an input that is 1. If Input is 0, we do not update that weight.</em></p>
+    </div>
+
+    <!-- PROBLEM 1: OR GATE -->
+    <section>
+        <h2>Problem 1: OR Operation</h2>
+        <p><strong>Goal:</strong> Learn the OR truth table (Output 1 if any input is 1).</p>
+        
+        <div style="background:#fafafa; padding:15px; border:1px dashed #ccc;">
+            <strong>Parameters:</strong><br>
+            Threshold = 0.9<br>
+            Learning Rate (c) = 0.2<br>
+            Initial Weights: w1 = 0.7, w2 = 0.7
+        </div>
+
+        <h3>Iteration 1</h3>
+        <table>
+            <tr>
+                <th>I1</th><th>I2</th>
+                <th>w1</th><th>w2</th>
+                <th>Act (Sum)</th>
+                <th>Out</th>
+                <th>Exp</th>
+                <th>Action</th>
+            </tr>
+            <tr>
+                <td>1</td><td>1</td>
+                <td>0.7</td><td>0.7</td>
+                <td>1.4</td><td>1</td><td>1</td>
+                <td class="action-ok">Do nothing</td>
+            </tr>
+            <tr>
+                <td>1</td><td>0</td>
+                <td>0.7</td><td>0.7</td>
+                <td>0.7</td><td>0</td><td>1</td>
+                <td class="action-update">Error! Increase w1<br>New w1 = 0.7 + 0.2 = 0.9</td>
+            </tr>
+            <tr>
+                <td>0</td><td>1</td>
+                <td><span class="val-change">0.9</span></td><td>0.7</td>
+                <td>0.7</td><td>0</td><td>1</td>
+                <td class="action-update">Error! Increase w2<br>New w2 = 0.7 + 0.2 = 0.9</td>
+            </tr>
+            <tr>
+                <td>0</td><td>0</td>
+                <td>0.9</td><td><span class="val-change">0.9</span></td>
+                <td>0</td><td>0</td><td>0</td>
+                <td class="action-ok">Do nothing</td>
+            </tr>
+        </table>
+
+        <h3>Iteration 2</h3>
+        <p>Using the updated weights: w1 = 0.9, w2 = 0.9.</p>
+        <table>
+            <tr>
+                <th>I1</th><th>I2</th>
+                <th>w1</th><th>w2</th>
+                <th>Act</th>
+                <th>Out</th>
+                <th>Exp</th>
+                <th>Action</th>
+            </tr>
+            <tr>
+                <td>1</td><td>1</td>
+                <td>0.9</td><td>0.9</td>
+                <td>1.8</td><td>1</td><td>1</td>
+                <td class="action-ok">Do nothing</td>
+            </tr>
+            <tr>
+                <td>1</td><td>0</td>
+                <td>0.9</td><td>0.9</td>
+                <td>0.9</td><td>1</td><td>1</td>
+                <td class="action-ok">Do nothing</td>
+            </tr>
+            <tr>
+                <td>0</td><td>1</td>
+                <td>0.9</td><td>0.9</td>
+                <td>0.9</td><td>1</td><td>1</td>
+                <td class="action-ok">Do nothing</td>
+            </tr>
+            <tr>
+                <td>0</td><td>0</td>
+                <td>0.9</td><td>0.9</td>
+                <td>0</td><td>0</td><td>0</td>
+                <td class="action-ok">Do nothing</td>
+            </tr>
+        </table>
+        <p class="action-ok">✅ Training Finished. Final Weights: 0.9, 0.9.</p>
+    </section>
+
+    <!-- PROBLEM 2: AND GATE -->
+    <section>
+        <h2>Problem 2: AND Operation</h2>
+        <p><strong>Goal:</strong> Learn the AND truth table (Output 1 only if BOTH inputs are 1).</p>
+        
+        <div style="background:#fafafa; padding:15px; border:1px dashed #ccc;">
+            <strong>Parameters:</strong><br>
+            Threshold = 0.7<br>
+            Learning Rate (e) = 0.3<br>
+            Initial Weights: w1 = 0.8, w2 = 0.8
+        </div>
+
+        <h3>Iteration 1</h3>
+        <table>
+            <tr>
+                <th>I1</th><th>I2</th>
+                <th>w1</th><th>w2</th>
+                <th>Act (Sum)</th>
+                <th>Out</th>
+                <th>Exp</th>
+                <th>Action</th>
+            </tr>
+            <tr>
+                <td>1</td><td>1</td>
+                <td>0.8</td><td>0.8</td>
+                <td>1.6</td><td>1</td><td>1</td>
+                <td class="action-ok">Do nothing</td>
+            </tr>
+            <tr>
+                <td>1</td><td>0</td>
+                <td>0.8</td><td>0.8</td>
+                <td>0.8</td><td>1</td><td>0</td>
+                <td class="action-update">Error! Decrease w1<br>New w1 = 0.8 - 0.3 = 0.5</td>
+            </tr>
+            <tr>
+                <td>0</td><td>1</td>
+                <td><span class="val-change">0.5</span></td><td>0.8</td>
+                <td>0.8</td><td>1</td><td>0</td>
+                <td class="action-update">Error! Decrease w2<br>New w2 = 0.8 - 0.3 = 0.5</td>
+            </tr>
+            <tr>
+                <td>0</td><td>0</td>
+                <td>0.5</td><td><span class="val-change">0.5</span></td>
+                <td>0</td><td>0</td><td>0</td>
+                <td class="action-ok">Do nothing</td>
+            </tr>
+        </table>
+
+        <h3>Iteration 2</h3>
+        <p>Using the updated weights: w1 = 0.5, w2 = 0.5.</p>
+        <table>
+            <tr>
+                <th>I1</th><th>I2</th>
+                <th>w1</th><th>w2</th>
+                <th>Act</th>
+                <th>Out</th>
+                <th>Exp</th>
+                <th>Action</th>
+            </tr>
+            <tr>
+                <td>1</td><td>1</td>
+                <td>0.5</td><td>0.5</td>
+                <td>1.0</td><td>1</td><td>1</td>
+                <td class="action-ok">Do nothing</td>
+            </tr>
+            <tr>
+                <td>1</td><td>0</td>
+                <td>0.5</td><td>0.5</td>
+                <td>0.5</td><td>0</td><td>0</td>
+                <td class="action-ok">Do nothing</td>
+            </tr>
+            <tr>
+                <td>0</td><td>1</td>
+                <td>0.5</td><td>0.5</td>
+                <td>0.5</td><td>0</td><td>0</td>
+                <td class="action-ok">Do nothing</td>
+            </tr>
+            <tr>
+                <td>0</td><td>0</td>
+                <td>0.5</td><td>0.5</td>
+                <td>0</td><td>0</td><td>0</td>
+                <td class="action-ok">Do nothing</td>
+            </tr>
+        </table>
+        <p class="action-ok">✅ Training Finished. Final Weights: 0.5, 0.5.</p>
+    </section>
+
+    <footer>
+        <p style="text-align:center; color:#888; font-size:0.8rem; margin-top:50px;">© 2024 Data Mining Study Guide</p>
+    </footer>
+
+</body>
+</html>
