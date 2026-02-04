@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clustering & Classification - Study Guide</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+        }
+        .nav-back {
+            display: inline-block;
+            margin-bottom: 20px;
+            text-decoration: none;
+            color: #666;
+            font-weight: 500;
+        }
+        .nav-back:hover { color: #0056b3; }
+        
+        h1 { border-bottom: 2px solid #eaeaea; padding-bottom: 10px; color: #2c3e50; }
+        h2 { color: #0056b3; margin-top: 40px; }
+        h3 { color: #444; border-left: 4px solid #0056b3; padding-left: 10px; }
+        
+        .example-box {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        /* Tables */
+        table { border-collapse: collapse; width: 100%; margin: 15px 0; font-size: 0.9rem; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        th { background-color: #f1f3f5; }
+
+        /* Dendrogram Visualization Styles */
+        .dendro-container {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            height: 300px;
+            padding: 20px;
+            background: #fff;
+            border: 1px solid #ddd;
+            margin-top: 20px;
+            position: relative;
+        }
+        
+        .dendro-label {
+            position: absolute;
+            bottom: -30px;
+            text-align: center;
+            width: 60px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        /* Drawing the lines using borders on empty divs */
+        .branch {
+            position: absolute;
+            border-top: 2px solid #333;
+            border-left: 2px solid #333;
+            border-right: 2px solid #333;
+        }
+        
+        .stem {
+            position: absolute;
+            border-left: 2px solid #333;
+        }
+
+        .y-axis {
+            position: absolute;
+            right: 10px;
+            top: 0;
+            bottom: 0;
+            width: 40px;
+            border-left: 1px dashed #ccc;
+            font-size: 0.8rem;
+            color: #666;
+        }
+        .y-mark { position: absolute; right: 5px; }
+
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="nav-back">← Back to Topics</a>
+
+    <h1>Clustering & Classification Algorithms</h1>
+
+    <!-- 1. K-MEANS -->
+    <section>
+        <h2>1. K-Means Clustering</h2>
+        <p><strong>Goal:</strong> Group data into <em>K</em> clusters based on similarity (Euclidean Distance). In the notes, K=3.</p>
+        
+        <div class="example-box">
+            <h3>The Example Data</h3>
+            <table>
+                <tr><th>Point</th><th>Area (x)</th><th>Perimeter (y)</th><th>Compactness (z)</th></tr>
+                <tr><td>A</td><td>15.26</td><td>14.84</td><td>0.871</td></tr>
+                <tr><td>B</td><td>14.88</td><td>14.57</td><td>0.881</td></tr>
+                <tr><td>C</td><td>14.29</td><td>14.09</td><td>0.905</td></tr>
+            </table>
+            <p><em>...and so on for D, E, F.</em></p>
+
+            <h3>The Algorithm Steps</h3>
+            <ol>
+                <li><strong>Initialization:</strong> Select 3 random points as "Centroids" (Leaders). Notes selected B, D, and F.</li>
+                <li><strong>Assignment (Iteration 1):</strong> Measure distance from every point to B, D, and F.
+                    <br><code>Dist = √((x2-x1)² + (y2-y1)² + (z2-z1)²)</code>
+                    <br>Assign point to the closest leader.
+                </li>
+                <li><strong>Update:</strong> Calculate the <strong>Average</strong> of the new groups to find new Centroids.</li>
+                <li><strong>Repeat:</strong> Keep measuring and moving centroids until they stop changing.</li>
+            </ol>
+        </div>
+    </section>
+
+    <!-- 2. HIERARCHICAL -->
+    <section>
+        <h2>2. Hierarchical Clustering</h2>
+        <p><strong>Goal:</strong> Build a tree structure (Dendrogram) linking items by distance.</p>
+        <p><strong>Methods:</strong>
+            <ul>
+                <li><strong>Single Linkage:</strong> Min distance (Nearest Neighbor).</li>
+                <li><strong>Complete Linkage:</strong> Max distance (Farthest Neighbor).</li>
+            </ul>
+        </p>
+
+        <div class="example-box">
+            <h3>Visualizing the Example (Page 8)</h3>
+            <p><strong>Method:</strong> Single Linkage on Student Data (Scores vs Height).</p>
+            <p><strong>Process:</strong></p>
+            <ol>
+                <li>Julie & John were closest (0.5) &rarr; Merged.</li>
+                <li>Mathew was closest to the (Julie/John) group &rarr; Merged.</li>
+                <li>Ryan was next &rarr; Merged.</li>
+                <li>Prince was next &rarr; Merged.</li>
+                <li>Bob was the furthest away &rarr; Merged last.</li>
+            </ol>
+
+            <!-- Custom CSS Dendrogram -->
+            <div class="dendro-container">
+                
+                <!-- Y Axis Labels -->
+                <div class="y-axis">
+                    <div class="y-mark" style="bottom: 100%;">8.0</div>
+                    <div class="y-mark" style="bottom: 70%;">3.16</div>
+                    <div class="y-mark" style="bottom: 50%;">2.04</div>
+                    <div class="y-mark" style="bottom: 30%;">2.01</div>
+                    <div class="y-mark" style="bottom: 15%;">1.67</div>
+                    <div class="y-mark" style="bottom: 5%;">0.5</div>
+                </div>
+
+                <!-- The Tree Structure (Positioning based on percentage of height) -->
+                
+                <!-- Julie & John join at low height -->
+                <div class="branch" style="bottom: 20px; left: 50px; width: 60px; height: 20px;"></div>
+                <div class="stem" style="bottom: 0; left: 50px; height: 20px;"></div> <!-- Julie Stem -->
+                <div class="stem" style="bottom: 0; left: 110px; height: 20px;"></div> <!-- John Stem -->
+
+                <!-- (J+J) joins Mathew -->
+                <div class="branch" style="bottom: 40px; left: 80px; width: 80px; height: 40px;"></div>
+                <div class="stem" style="bottom: 0; left: 160px; height: 40px;"></div> <!-- Mathew Stem -->
+
+                <!-- Group joins Ryan -->
+                <div class="branch" style="bottom: 80px; left: 120px; width: 100px; height: 50px;"></div>
+                <div class="stem" style="bottom: 0; left: 220px; height: 80px;"></div> <!-- Ryan Stem -->
+
+                <!-- Group joins Prince -->
+                <div class="branch" style="bottom: 130px; left: 170px; width: 110px; height: 50px;"></div>
+                <div class="stem" style="bottom: 0; left: 280px; height: 130px;"></div> <!-- Prince Stem -->
+
+                <!-- Group joins Bob -->
+                <div class="branch" style="bottom: 180px; left: 225px; width: 115px; height: 60px;"></div>
+                <div class="stem" style="bottom: 0; left: 340px; height: 180px;"></div> <!-- Bob Stem -->
+
+
+                <!-- Labels -->
+                <div class="dendro-label" style="left: 20px;">Julie</div>
+                <div class="dendro-label" style="left: 80px;">John</div>
+                <div class="dendro-label" style="left: 130px;">Mathew</div>
+                <div class="dendro-label" style="left: 190px;">Ryan</div>
+                <div class="dendro-label" style="left: 250px;">Prince</div>
+                <div class="dendro-label" style="left: 310px;">Bob</div>
+
+            </div>
+            <p style="text-align: center; font-size: 0.8rem; color: #666;">Figure: Dendrogram based on Single Linkage Distance</p>
+        </div>
+    </section>
+
+    <!-- 3. DECISION TREES -->
+    <section>
+        <h2>3. Decision Trees</h2>
+        <p><strong>Goal:</strong> Predict a class label by asking a series of Yes/No questions.</p>
+        <p><strong>Example (Page 9):</strong> Animal Classification.</p>
+        <ul>
+            <li>Is it Warm Blooded? &rarr; No.</li>
+            <li>Is it Cold Blooded? &rarr; Yes.</li>
+            <li>Does it have scales? &rarr; Yes.</li>
+            <li>Does it give live birth? &rarr; No.</li>
+            <li><strong>Prediction:</strong> Reptile.</li>
+        </ul>
+
+        <h3>The Confusion Matrix</h3>
+        <p>Used to check accuracy.</p>
+        <table>
+            <tr>
+                <th></th>
+                <th>Predicted YES</th>
+                <th>Predicted NO</th>
+            </tr>
+            <tr>
+                <th>Actual YES</th>
+                <td><strong>True Positive</strong></td>
+                <td>False Negative (Type II)</td>
+            </tr>
+            <tr>
+                <th>Actual NO</th>
+                <td>False Positive (Type I)</td>
+                <td><strong>True Negative</strong></td>
+            </tr>
+        </table>
+    </section>
+
+    <!-- 4. COBWEB -->
+    <section>
+        <h2>4. COBWEB Clustering</h2>
+        <p><strong>Goal:</strong> Incremental clustering for <strong>Categorical Data</strong> (Non-numeric).</p>
+        <p>Unlike K-Means (which uses Distance), COBWEB uses <strong>Probability</strong>.</p>
+        
+        <div class="example-box">
+            <h3>How it works (from Notes)</h3>
+            <p>1. Start with a Root Node containing all data.</p>
+            <p>2. Calculate probabilities for every feature.</p>
+            <code>Example: P(Color = White) = 2/4</code>
+            <p>3. Split the node if the data isn't "pure" enough.</p>
+            <p>4. Create a hierarchy of probabilities:</p>
+            <ul>
+                <li><strong>Root:</strong> 50% White, 50% Black</li>
+                <li>&rarr; <strong>Child Node 1:</strong> 100% White (contains items a, b)</li>
+                <li>&rarr; <strong>Child Node 2:</strong> 100% Black (contains items c, d)</li>
+            </ul>
+        </div>
+    </section>
+
+    <br><br>
+    <footer>
+        <p style="text-align:center; color:#888; font-size:0.8rem;">© 2024 Data Mining Study Guide</p>
+    </footer>
+
+</body>
+</html>
