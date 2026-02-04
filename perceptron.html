@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perceptron & Backpropagation - Study Guide</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f6f8;
+        }
+        .nav-back {
+            display: inline-block;
+            margin-bottom: 20px;
+            text-decoration: none;
+            color: #666;
+            font-weight: 500;
+        }
+        .nav-back:hover { color: #0056b3; }
+        
+        h1 { 
+            border-bottom: 3px solid #0056b3; 
+            padding-bottom: 15px; 
+            color: #2c3e50; 
+            background: white;
+            padding: 20px;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 0;
+        }
+
+        section {
+            background: white;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        h2 { color: #0056b3; margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        h3 { color: #444; margin-top: 25px; font-size: 1.1rem; font-weight: 700; border-left: 4px solid #0056b3; padding-left: 10px;}
+
+        /* Math Boxes */
+        .math-box {
+            background-color: #eef6fc;
+            border: 1px solid #cce5ff;
+            padding: 15px;
+            font-family: "Courier New", monospace;
+            margin: 10px 0;
+            font-size: 0.95rem;
+            border-radius: 5px;
+        }
+        .formula-box {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 10px;
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+
+        /* Tables */
+        table { border-collapse: collapse; width: 100%; margin: 15px 0; font-size: 0.9rem; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+        th { background-color: #f8f9fa; color: #333; }
+        
+        .updated-val { color: #d63384; font-weight: bold; }
+        .input-val { color: #0d6efd; font-weight: bold; }
+
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="nav-back">← Back to Topics</a>
+
+    <h1>Neural Networks: Perceptron Learning</h1>
+    <p>A step-by-step guide to updating weights using the <strong>Sigmoid Activation Function</strong> and <strong>Backpropagation</strong>.</p>
+
+    <!-- SECTION 1: SETUP -->
+    <section>
+        <h2>1. Problem Setup</h2>
+        
+        <div style="display:flex; justify-content:space-between; flex-wrap:wrap;">
+            <div style="flex:1; min-width:300px;">
+                <h3>Initial Weights & Parameters</h3>
+                <ul>
+                    <li><strong>w1:</strong> 0.5</li>
+                    <li><strong>w2:</strong> 0.3</li>
+                    <li><strong>Bias (b):</strong> 0.1</li>
+                    <li><strong>Learning Rate (η):</strong> 0.1</li>
+                    <li><strong>a:</strong> 1 (Slope parameter)</li>
+                </ul>
+            </div>
+            <div style="flex:1; min-width:300px;">
+                <h3>Training Data</h3>
+                <table>
+                    <tr><th>Pattern</th><th>Input I1</th><th>Input I2</th><th>Target (d)</th></tr>
+                    <tr><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+                    <tr><td>2</td><td>0</td><td>0</td><td>0</td></tr>
+                </table>
+                <h3>Test Data</h3>
+                <p>Input: (0, 1)</p>
+            </div>
+        </div>
+
+        <div class="formula-box">
+            <strong>Key Formulas:</strong><br>
+            1. Sum (v) = I₁w₁ + I₂w₂ + b<br>
+            2. Activation (f) = 1 / (1 + e⁻ᵃᵛ)<br>
+            3. Error Signal (δ) = f(1-f)(d-f)<br>
+            4. Weight Update (Δw) = η * Input * δ
+        </div>
+    </section>
+
+    <!-- SECTION 2: PATTERN 1 -->
+    <section>
+        <h2>2. Training Pattern 1: (1, 1, Target=1)</h2>
+        
+        <h3>Step A: Forward Pass</h3>
+        <p>Calculate the actual output with current weights.</p>
+        <div class="math-box">
+            v = (1 * 0.5) + (1 * 0.3) + 0.1<br>
+            v = 0.9<br><br>
+            f = 1 / (1 + e⁻⁰˙⁹)<br>
+            f = 1 / (1 + 0.406)<br>
+            <strong>f = 0.711</strong>
+        </div>
+
+        <h3>Step B: Backpropagation (Error Calculation)</h3>
+        <p>Calculate how much the weights need to change (δ).</p>
+        <div class="math-box">
+            δ = f * (1 - f) * (d - f)<br>
+            δ = 0.711 * (1 - 0.711) * (1 - 0.711)<br>
+            δ = 0.711 * 0.289 * 0.289<br>
+            <strong>δ = 0.05938</strong>
+        </div>
+
+        <h3>Step C: Weight Updates</h3>
+        <p>New Weight = Old Weight + (η * Input * δ)</p>
+        <table>
+            <tr>
+                <th>Weight</th>
+                <th>Calculation (η * Input * δ)</th>
+                <th>Δ Change</th>
+                <th>New Value</th>
+            </tr>
+            <tr>
+                <td>w1</td>
+                <td>0.1 * <span class="input-val">1</span> * 0.05938</td>
+                <td>0.005938</td>
+                <td class="updated-val">0.5059</td>
+            </tr>
+            <tr>
+                <td>w2</td>
+                <td>0.1 * <span class="input-val">1</span> * 0.05938</td>
+                <td>0.005938</td>
+                <td class="updated-val">0.3059</td>
+            </tr>
+            <tr>
+                <td>bias</td>
+                <td>0.1 * <span class="input-val">1</span> * 0.05938</td>
+                <td>0.005938</td>
+                <td class="updated-val">0.1059</td>
+            </tr>
+        </table>
+    </section>
+
+    <!-- SECTION 3: PATTERN 2 -->
+    <section>
+        <h2>3. Training Pattern 2: (0, 0, Target=0)</h2>
+        <p><em>Note: We use the <strong>NEW</strong> weights calculated above.</em></p>
+
+        <h3>Step A: Forward Pass</h3>
+        <div class="math-box">
+            v = (0 * 0.5059) + (0 * 0.3059) + 0.1059<br>
+            v = 0.1059<br><br>
+            f = 1 / (1 + e⁻⁰˙¹⁰⁵⁹)<br>
+            f = 1 / (1 + 0.8995)<br>
+            <strong>f = 0.526</strong>
+        </div>
+
+        <h3>Step B: Backpropagation</h3>
+        <div class="math-box">
+            δ = f * (1 - f) * (d - f)<br>
+            δ = 0.526 * (1 - 0.526) * (0 - 0.526)<br>
+            δ = 0.526 * 0.474 * (-0.526)<br>
+            <strong>δ = -0.1311</strong>
+        </div>
+
+        <h3>Step C: Weight Updates</h3>
+        <p class="formula-box">⚠️ <strong>Important:</strong> Since Inputs I1 and I2 are <strong>0</strong>, the weights w1 and w2 will NOT change.</p>
+        
+        <table>
+            <tr>
+                <th>Weight</th>
+                <th>Calculation (η * Input * δ)</th>
+                <th>Δ Change</th>
+                <th>New Value</th>
+            </tr>
+            <tr>
+                <td>w1</td>
+                <td>0.1 * <span class="input-val">0</span> * -0.1311</td>
+                <td>0</td>
+                <td>0.5059 (No Change)</td>
+            </tr>
+            <tr>
+                <td>w2</td>
+                <td>0.1 * <span class="input-val">0</span> * -0.1311</td>
+                <td>0</td>
+                <td>0.3059 (No Change)</td>
+            </tr>
+            <tr>
+                <td>bias</td>
+                <td>0.1 * <span class="input-val">1</span> * -0.1311</td>
+                <td>-0.01311</td>
+                <td class="updated-val">0.09279</td>
+            </tr>
+        </table>
+    </section>
+
+    <!-- SECTION 4: TESTING -->
+    <section>
+        <h2>4. Testing Phase</h2>
+        <p><strong>Input:</strong> (0, 1) <br><strong>Goal:</strong> Find output using final weights.</p>
+        
+        <div class="math-box">
+            <strong>Final Weights:</strong><br>
+            w1 = 0.5059<br>
+            w2 = 0.3059<br>
+            b = 0.09279<br><br>
+
+            <strong>Calculation:</strong><br>
+            v = (0 * 0.5059) + (1 * 0.3059) + 0.09279<br>
+            v = 0 + 0.3059 + 0.09279<br>
+            <strong>v = 0.39869</strong>
+        </div>
+
+        <h3>Final Output (f)</h3>
+        <div class="math-box" style="border-left: 5px solid #28a745;">
+            f = 1 / (1 + e⁻⁰˙³⁹⁸⁶⁹)<br>
+            f = 1 / (1 + 0.67)<br>
+            f = 1 / 1.67<br>
+            <strong>f = 0.598</strong> (Ans)
+        </div>
+    </section>
+
+    <footer>
+        <p style="text-align:center; color:#888; font-size:0.8rem; margin-top:50px;">© 2024 Data Mining Study Guide</p>
+    </footer>
+
+</body>
+</html>
