@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apriori Algorithm - Study Guide</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+        }
+        .nav-back {
+            display: inline-block;
+            margin-bottom: 20px;
+            text-decoration: none;
+            color: #666;
+            font-weight: 500;
+        }
+        .nav-back:hover { color: #0056b3; }
+        
+        h1, h2, h3 { color: #2c3e50; }
+        h1 { border-bottom: 2px solid #eaeaea; padding-bottom: 10px; }
+        
+        .concept-box {
+            background-color: #f0f7fb;
+            border-left: 5px solid #0056b3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .highlight-red { color: #d9534f; font-weight: bold; }
+        .highlight-green { color: #28a745; font-weight: bold; }
+        
+        /* Table Styles for the Algorithm Steps */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+            font-size: 0.9rem;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th { background-color: #f2f2f2; }
+        .step-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .step-card {
+            flex: 1;
+            min-width: 250px;
+            border: 1px solid #eaeaea;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .rejected { text-decoration: line-through; color: #999; }
+        
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+            color: #d63384;
+        }
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="nav-back">← Back to Topics</a>
+
+    <h1>Association Rule Mining (ARM) & Apriori</h1>
+
+    <p>Association Rule Mining is a data mining technique used to discover interesting relationships or patterns within large datasets. It is most famous for "Market Basket Analysis" (e.g., finding out that people who buy bread also buy butter).</p>
+
+    <h2>1. Key Metrics</h2>
+    <p>To determine if a relationship is strong, we use two measurements:</p>
+    
+    <div class="concept-box">
+        <h3>1. Support (Frequency)</h3>
+        <p>Measures how often items appear together.</p>
+        <p><em>"Is this combination popular?"</em></p>
+    </div>
+
+    <div class="concept-box">
+        <h3>2. Confidence (Reliability)</h3>
+        <p>Measures the likelihood that Item B is bought if Item A is bought.</p>
+        <p><em>"How strong is the relationship?"</em></p>
+    </div>
+
+    <hr>
+
+    <h2>2. The Problem & Solution</h2>
+    <p><strong>The Brute Force Approach:</strong> Trying to calculate every possible combination of items is <span class="highlight-red">computationally prohibited</span>. It takes too much computer power.</p>
+    
+    <p><strong>The Solution (Apriori Principle):</strong></p>
+    <blockquote>
+        "If an itemset is infrequent, all its supersets are also infrequent."
+    </blockquote>
+    <p>This means if people rarely buy <strong>Pickles</strong>, we don't need to waste time checking if they buy <strong>Pickles & Ice Cream</strong>.</p>
+
+    <hr>
+
+    <h2>3. The Apriori Algorithm: Step-by-Step</h2>
+    <p><strong>Goal:</strong> Find itemsets with <code>Support ≥ 2</code>.</p>
+
+    <div class="step-container">
+        
+        <!-- Database -->
+        <div class="step-card">
+            <h3>Database (TDB)</h3>
+            <table>
+                <tr><th>TID</th><th>Items</th></tr>
+                <tr><td>10</td><td>A, C, D</td></tr>
+                <tr><td>20</td><td>B, C, E</td></tr>
+                <tr><td>30</td><td>A, B, C, E</td></tr>
+                <tr><td>40</td><td>B, E</td></tr>
+            </table>
+        </div>
+
+        <!-- Scan 1 -->
+        <div class="step-card">
+            <h3>Step 1 (Scan Items)</h3>
+            <p>Count individual items.</p>
+            <table>
+                <tr><th>Item</th><th>Sup</th><th>Action</th></tr>
+                <tr><td>{A}</td><td>2</td><td><span class="highlight-green">Keep</span></td></tr>
+                <tr><td>{B}</td><td>3</td><td><span class="highlight-green">Keep</span></td></tr>
+                <tr><td>{C}</td><td>3</td><td><span class="highlight-green">Keep</span></td></tr>
+                <tr class="rejected"><td>{D}</td><td>1</td><td><span class="highlight-red">Prune (< 2)</span></td></tr>
+                <tr><td>{E}</td><td>3</td><td><span class="highlight-green">Keep</span></td></tr>
+            </table>
+        </div>
+
+        <!-- Scan 2 -->
+        <div class="step-card">
+            <h3>Step 2 (Scan Pairs)</h3>
+            <p>Only pair up the survivors.</p>
+            <table>
+                <tr><th>Itemset</th><th>Sup</th><th>Action</th></tr>
+                <tr class="rejected"><td>{A, B}</td><td>1</td><td>Prune</td></tr>
+                <tr><td>{A, C}</td><td>2</td><td><span class="highlight-green">Keep</span></td></tr>
+                <tr class="rejected"><td>{A, E}</td><td>1</td><td>Prune</td></tr>
+                <tr><td>{B, C}</td><td>2</td><td><span class="highlight-green">Keep</span></td></tr>
+                <tr><td>{B, E}</td><td>3</td><td><span class="highlight-green">Keep</span></td></tr>
+                <tr><td>{C, E}</td><td>2</td><td><span class="highlight-green">Keep</span></td></tr>
+            </table>
+        </div>
+
+        <!-- Scan 3 -->
+        <div class="step-card">
+            <h3>Step 3 (Final Scan)</h3>
+            <p>Merge surviving pairs into triplets.</p>
+            <table>
+                <tr><th>Itemset</th><th>Sup</th><th>Result</th></tr>
+                <tr><td>{B, C, E}</td><td>2</td><td><span class="highlight-green">FREQUENT</span></td></tr>
+            </table>
+            <p><em>Note: We don't check {A, B, C} because {A, B} was pruned in Step 2.</em></p>
+        </div>
+
+    </div>
+
+    <hr>
+
+    <h2>4. Real-World Applications</h2>
+    <ul>
+        <li><strong>Market Basket Analysis:</strong> Product placement and cross-selling (e.g., Bread & Butter).</li>
+        <li><strong>Recommendation Systems:</strong> Netflix/Amazon suggestions ("Users who bought X also bought Y").</li>
+        <li><strong>Healthcare Analytics:</strong> Correlating patient symptoms with effective treatments.</li>
+        <li><strong>Fraud Detection:</strong> Identifying unusual transaction sequences that don't match standard rules.</li>
+    </ul>
+
+    <br><br>
+    <footer>
+        <p>© 2024 Data Mining Study Guide</p>
+    </footer>
+
+</body>
+</html>
