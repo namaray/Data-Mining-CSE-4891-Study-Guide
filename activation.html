@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activation Functions - Study Guide</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f6f8;
+        }
+        .nav-back {
+            display: inline-block;
+            margin-bottom: 20px;
+            text-decoration: none;
+            color: #666;
+            font-weight: 500;
+        }
+        .nav-back:hover { color: #0056b3; }
+        
+        h1 { 
+            border-bottom: 3px solid #0056b3; 
+            padding-bottom: 15px; 
+            color: #2c3e50; 
+            background: white;
+            padding: 20px;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 0;
+        }
+
+        section {
+            background: white;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        h2 { color: #0056b3; margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        h3 { color: #444; margin-top: 25px; font-size: 1.1rem; font-weight: 700; border-left: 4px solid #0056b3; padding-left: 10px;}
+
+        /* Math Boxes */
+        .math-box {
+            background-color: #eef6fc;
+            border: 1px solid #cce5ff;
+            padding: 15px;
+            font-family: "Courier New", monospace;
+            margin: 10px 0;
+            font-size: 0.95rem;
+            border-radius: 5px;
+        }
+        .formula-box {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 10px;
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+        
+        .graph-placeholder {
+            border: 1px dashed #ccc;
+            background: #fafafa;
+            padding: 20px;
+            text-align: center;
+            color: #888;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        /* Tables */
+        table { border-collapse: collapse; width: 100%; margin: 15px 0; font-size: 0.9rem; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+        th { background-color: #f8f9fa; color: #333; }
+
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="nav-back">← Back to Topics</a>
+
+    <h1>Activation Functions & Stochastic Models</h1>
+    <p>An Activation Function decides whether a neuron should be activated (fire) or not based on the weighted sum of inputs.</p>
+
+    <!-- COMMON SETUP -->
+    <section>
+        <h2>The Common Example</h2>
+        <p>For all examples below, we use these inputs and weights from the notes:</p>
+        <div class="formula-box">
+            <strong>Inputs:</strong> I₁ = 1, I₂ = 1<br>
+            <strong>Weights:</strong> w₁ = 0.5, w₂ = -0.3<br>
+            <strong>Induced Local Field (v):</strong> The weighted sum.
+        </div>
+        <div class="math-box">
+            v = (I₁ * w₁) + (I₂ * w₂)<br>
+            v = (1 * 0.5) + (1 * -0.3)<br>
+            v = 0.5 - 0.3<br>
+            <strong>v = 0.2</strong>
+        </div>
+        <p><em>We will see how different functions handle this input of 0.2.</em></p>
+    </section>
+
+    <!-- 1. THRESHOLD -->
+    <section>
+        <h2>1. Threshold Function</h2>
+        <p>Also known as the Step Function. It is binary (0 or 1).</p>
+        
+        <div class="formula-box">
+            <strong>Rule:</strong><br>
+            If v ≥ 0 &rarr; Output = 1<br>
+            If v < 0 &rarr; Output = 0
+        </div>
+
+        <h3>Calculation:</h3>
+        <div class="math-box">
+            Since v = 0.2<br>
+            And 0.2 ≥ 0<br>
+            <strong>Output = 1</strong>
+        </div>
+    </section>
+
+    <!-- 2. PIECEWISE -->
+    <section>
+        <h2>2. Piecewise-Linear Function</h2>
+        <p>A linear slope between -0.5 and +0.5, and flat (saturated) outside that range.</p>
+        
+        <div class="formula-box">
+            <strong>Rule:</strong><br>
+            1. If v ≥ 0.5 &rarr; Output = 1<br>
+            2. If -0.5 < v < 0.5 &rarr; Output = v + 0.5<br>
+            3. If v ≤ -0.5 &rarr; Output = 0
+        </div>
+
+        <h3>Calculation:</h3>
+        <div class="math-box">
+            Since v = 0.2<br>
+            Check range: -0.5 < 0.2 < 0.5 (It is in the middle)<br>
+            Output = 0.2 + 0.5<br>
+            <strong>Output = 0.7</strong>
+        </div>
+    </section>
+
+    <!-- 3. SIGMOID -->
+    <section>
+        <h2>3. Sigmoid Function (Logistic)</h2>
+        <p>An "S" shaped curve. It maps any value to a number between 0 and 1.</p>
+        
+        <div class="formula-box">
+            <strong>Formula:</strong> φ(v) = 1 / (1 + e⁻ᵃᵛ)<br>
+            <em>where 'a' is the slope parameter. (We assume a=1 for this example).</em>
+        </div>
+
+        <h3>Calculation:</h3>
+        <div class="math-box">
+            v = 0.2<br>
+            φ(0.2) = 1 / (1 + e⁻⁰˙²)<br>
+            φ(0.2) = 1 / (1 + 0.8187)<br>
+            φ(0.2) = 1 / 1.8187<br>
+            <strong>Output = 0.5498</strong>
+        </div>
+    </section>
+
+    <!-- 4. SIGNUM / TANH -->
+    <section>
+        <h2>4. Signum Function (Hyperbolic Tangent)</h2>
+        <p>Uses the `tanh` function. Maps values between -1 and +1.</p>
+        
+        <div class="formula-box">
+            <strong>Formula:</strong> φ(v) = tanh(v)
+        </div>
+
+        <h3>Calculation:</h3>
+        <div class="math-box">
+            v = 0.2<br>
+            φ(0.2) = tanh(0.2)<br>
+            <strong>Output = 0.1973</strong>
+        </div>
+    </section>
+
+    <!-- 5. STOCHASTIC MODEL -->
+    <section>
+        <h2>5. Stochastic Model of a Neuron</h2>
+        <p>In this model, the neuron doesn't have a fixed output. Instead, it has a <strong>Probability</strong> of firing (+1) or resting (-1).</p>
+        
+        <div class="formula-box">
+            <strong>Probability of Firing P(v):</strong><br>
+            P(v) = 1 / (1 + e⁻ᵛ/ᵀ)<br>
+            <em>T = Pseudo-temperature (Controls noise/uncertainty).</em>
+        </div>
+
+        <p><strong>Effect of T (Temperature):</strong></p>
+        <ul>
+            <li><strong>T &rarr; 0:</strong> Deterministic (Noiseless). The neuron behaves exactly like a Threshold function.</li>
+            <li><strong>T &rarr; &infin;:</strong> Pure Noise. The probability becomes 0.5 (random guess).</li>
+        </ul>
+
+        <h3>Calculation Example (High Noise)</h3>
+        <p>Let v = 0.2 and T = 10,000.</p>
+        <div class="math-box">
+            Exponent = -v / T<br>
+            Exponent = -0.2 / 10000 = -0.00002<br><br>
+            P(0.2) = 1 / (1 + e⁻⁰˙⁰⁰⁰⁰²)<br>
+            P(0.2) = 1 / (1 + 0.99998)<br>
+            P(0.2) = 1 / 1.99998<br>
+            <strong>Firing Probability ≈ 0.500005</strong> (Almost 50/50 random)
+        </div>
+    </section>
+
+    <footer>
+        <p style="text-align:center; color:#888; font-size:0.8rem; margin-top:50px;">© 2024 Data Mining Study Guide</p>
+    </footer>
+
+</body>
+</html>
