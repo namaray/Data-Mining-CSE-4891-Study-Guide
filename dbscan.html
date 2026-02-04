@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DBSCAN Algorithm - Study Guide</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f6f8;
+        }
+        .nav-back {
+            display: inline-block;
+            margin-bottom: 20px;
+            text-decoration: none;
+            color: #666;
+            font-weight: 500;
+        }
+        .nav-back:hover { color: #0056b3; }
+        
+        h1 { 
+            border-bottom: 3px solid #0056b3; 
+            padding-bottom: 15px; 
+            color: #2c3e50; 
+            background: white;
+            padding: 20px;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 0;
+        }
+
+        section {
+            background: white;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        h2 { color: #0056b3; margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        h3 { color: #444; margin-top: 25px; font-size: 1.1rem; font-weight: 700;}
+
+        /* Concept Boxes */
+        .def-box {
+            background-color: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        /* Tables */
+        table { border-collapse: collapse; width: 100%; margin: 15px 0; font-size: 0.85rem; }
+        th, td { border: 1px solid #ddd; padding: 6px; text-align: center; }
+        th { background-color: #f8f9fa; color: #333; }
+        
+        /* Matrix specific styling */
+        .matrix-cell-highlight { background-color: #d4edda; font-weight: bold; } /* Matches condition */
+        
+        /* Point Types */
+        .type-core { background-color: #d4edda; color: #155724; font-weight: bold; padding: 2px 6px; border-radius: 4px; }
+        .type-border { background-color: #fff3cd; color: #856404; font-weight: bold; padding: 2px 6px; border-radius: 4px; }
+        .type-noise { background-color: #f8d7da; color: #721c24; font-weight: bold; padding: 2px 6px; border-radius: 4px; }
+
+        .cluster-1 { color: #0056b3; font-weight: bold; }
+        .cluster-2 { color: #e67e22; font-weight: bold; }
+
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="nav-back">← Back to Topics</a>
+
+    <h1>DBSCAN Algorithm</h1>
+    <p><strong>D</strong>ensity-<strong>B</strong>ased <strong>S</strong>patial <strong>C</strong>lustering of <strong>A</strong>pplications with <strong>N</strong>oise.</p>
+
+    <div class="def-box">
+        <h3>Key Concepts</h3>
+        <ul>
+            <li><strong>Epsilon (ε):</strong> The radius around a point. (The "reach").</li>
+            <li><strong>MinPts:</strong> The minimum number of points required inside that radius to form a dense region.</li>
+            <li><strong>Core Point:</strong> Has ≥ MinPts within its radius.</li>
+            <li><strong>Border Point:</strong> Has < MinPts, but is a neighbor of a Core Point.</li>
+            <li><strong>Noise Point:</strong> Has < MinPts and is NOT a neighbor of a Core Point.</li>
+        </ul>
+    </div>
+
+    <!-- PROBLEM 1 -->
+    <section>
+        <h2>Problem 1: Distance-Based Clustering</h2>
+        <p><strong>Parameters:</strong> <code>MinPts = 4</code> and <code>Epsilon (ε) = 1.9</code>.</p>
+        
+        <h3>Step 1: The Input Data</h3>
+        <p>Points P1 through P12 with coordinates.</p>
+        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+            <div>P1: (3,7)<br>P2: (4,6)<br>P3: (5,5)<br>P4: (6,4)</div>
+            <div>P5: (7,3)<br>P6: (6,2)<br>P7: (7,2)<br>P8: (8,4)</div>
+            <div>P9: (3,3)<br>P10: (2,6)<br>P11: (3,5)<br>P12: (2,4)</div>
+        </div>
+
+        <h3>Step 2: Distance Matrix Calculation</h3>
+        <p>Calculate Euclidean Distance between all points. <br><em>Highlighting cells where Distance ≤ 1.9</em>.</p>
+        
+        <div style="overflow-x: auto;">
+            <table>
+                <tr><th></th><th>P1</th><th>P2</th><th>P3</th><th>P4</th><th>P5</th><th>P6</th><th>P7</th><th>P8</th><th>P9</th><th>P10</th><th>P11</th><th>P12</th></tr>
+                <tr><th>P1</th><td class="matrix-cell-highlight">0</td><td class="matrix-cell-highlight">1.41</td><td>2.83</td><td>4.24</td><td>5.66</td><td>5.83</td><td>6.40</td><td>5.83</td><td>4.00</td><td class="matrix-cell-highlight">1.41</td><td>2.00</td><td>3.16</td></tr>
+                <tr><th>P2</th><td class="matrix-cell-highlight">1.41</td><td class="matrix-cell-highlight">0</td><td class="matrix-cell-highlight">1.41</td><td>2.83</td><td>4.24</td><td>4.47</td><td>5.00</td><td>4.47</td><td>3.16</td><td>2.00</td><td class="matrix-cell-highlight">1.41</td><td>2.83</td></tr>
+                <tr><th>P3</th><td>2.83</td><td class="matrix-cell-highlight">1.41</td><td class="matrix-cell-highlight">0</td><td class="matrix-cell-highlight">1.41</td><td>2.83</td><td>3.16</td><td>3.61</td><td>3.16</td><td>2.83</td><td>3.16</td><td>2.00</td><td>3.16</td></tr>
+                <tr><th>P4</th><td>4.24</td><td>2.83</td><td class="matrix-cell-highlight">1.41</td><td class="matrix-cell-highlight">0</td><td class="matrix-cell-highlight">1.41</td><td>2.00</td><td>2.24</td><td>2.00</td><td>3.61</td><td>4.47</td><td>3.16</td><td>4.00</td></tr>
+                <tr><th>P5</th><td>5.66</td><td>4.24</td><td>2.83</td><td class="matrix-cell-highlight">1.41</td><td class="matrix-cell-highlight">0</td><td class="matrix-cell-highlight">1.00</td><td class="matrix-cell-highlight">1.00</td><td class="matrix-cell-highlight">1.41</td><td>4.47</td><td>5.83</td><td>4.47</td><td>5.10</td></tr>
+                <!-- Partial table shown for clarity, mirroring PDF -->
+                <tr><th>P11</th><td>2.00</td><td class="matrix-cell-highlight">1.41</td><td>2.00</td><td>3.16</td><td>4.47</td><td>4.24</td><td>5.00</td><td>5.10</td><td>2.00</td><td class="matrix-cell-highlight">1.41</td><td class="matrix-cell-highlight">0</td><td class="matrix-cell-highlight">1.41</td></tr>
+            </table>
+        </div>
+
+        <h3>Step 3: Identify Neighbors & Status</h3>
+        <p>For each point, list neighbors found in the matrix (where dist ≤ 1.9). <br>If Count ≥ 4 (including self), it is <strong>CORE</strong>.</p>
+
+        <table>
+            <tr><th>Point</th><th>Neighbors (within 1.9)</th><th>Count</th><th>Initial Status</th><th>Final Status</th></tr>
+            <tr><td>P1</td><td>P1, P2, P10</td><td>3</td><td>Not Core</td><td><span class="type-border">Border</span> (neighbor of P2)</td></tr>
+            <tr><td>P2</td><td>P1, P2, P3, P11</td><td>4</td><td><span class="type-core">CORE</span></td><td><span class="type-core">CORE</span></td></tr>
+            <tr><td>P3</td><td>P2, P3, P4</td><td>3</td><td>Not Core</td><td><span class="type-border">Border</span> (neighbor of P2)</td></tr>
+            <tr><td>P4</td><td>P3, P4, P5</td><td>3</td><td>Not Core</td><td><span class="type-border">Border</span> (neighbor of P5)</td></tr>
+            <tr><td>P5</td><td>P4, P5, P6, P7, P8</td><td>5</td><td><span class="type-core">CORE</span></td><td><span class="type-core">CORE</span></td></tr>
+            <tr><td>P6</td><td>P5, P6, P7</td><td>3</td><td>Not Core</td><td><span class="type-border">Border</span> (neighbor of P5)</td></tr>
+            <tr><td>P7</td><td>P5, P6, P7</td><td>3</td><td>Not Core</td><td><span class="type-border">Border</span> (neighbor of P5)</td></tr>
+            <tr><td>P8</td><td>P5, P8</td><td>2</td><td>Not Core</td><td><span class="type-border">Border</span> (neighbor of P5)</td></tr>
+            <tr><td>P9</td><td>P9, P12</td><td>2</td><td>Not Core</td><td><span class="type-noise">NOISE</span></td></tr>
+            <tr><td>P10</td><td>P1, P10, P11</td><td>3</td><td>Not Core</td><td><span class="type-border">Border</span> (neighbor of P11)</td></tr>
+            <tr><td>P11</td><td>P2, P10, P11, P12</td><td>4</td><td><span class="type-core">CORE</span></td><td><span class="type-core">CORE</span></td></tr>
+            <tr><td>P12</td><td>P9, P11, P12</td><td>3</td><td>Not Core</td><td><span class="type-border">Border</span> (neighbor of P11)</td></tr>
+        </table>
+        
+        <p><em>Note: P9 is Noise because it has < 4 neighbors and neither of its neighbors (P12) are Core points.</em></p>
+
+        <h3>Step 4: Forming Clusters</h3>
+        <p>We connect Core points that are neighbors, then attach their border points.</p>
+        <ul>
+            <li><strong>Cluster 1:</strong> Started by <strong>P2</strong> and <strong>P11</strong> (connected via neighbors).
+                <br>Includes Borders: P1, P3, P10, P12.
+            </li>
+            <li><strong>Cluster 2:</strong> Started by <strong>P5</strong>.
+                <br>Includes Borders: P4, P6, P7, P8.
+            </li>
+            <li><strong>Outliers:</strong> P9 (Noise).</li>
+        </ul>
+
+    </section>
+
+    <!-- PROBLEM 2 -->
+    <section>
+        <h2>Problem 2: Similarity Matrix</h2>
+        <p><strong>Parameters:</strong> <code>MinPts = 2</code> and <code>Similarity Threshold = 0.8</code>.</p>
+        <p><em>Note: For Similarity, higher is better. We look for values ≥ 0.8.</em></p>
+
+        <h3>Step 1: Input Similarity Matrix</h3>
+        <table>
+            <tr><th></th><th>P1</th><th>P2</th><th>P3</th><th>P4</th><th>P5</th></tr>
+            <tr><th>P1</th><td class="matrix-cell-highlight">1.00</td><td>0.10</td><td>0.41</td><td>0.55</td><td>0.35</td></tr>
+            <tr><th>P2</th><td>0.10</td><td class="matrix-cell-highlight">1.00</td><td>0.64</td><td>0.47</td><td class="matrix-cell-highlight">0.98</td></tr>
+            <tr><th>P3</th><td>0.41</td><td>0.64</td><td class="matrix-cell-highlight">1.00</td><td>0.44</td><td class="matrix-cell-highlight">0.85</td></tr>
+            <tr><th>P4</th><td>0.55</td><td>0.47</td><td>0.44</td><td class="matrix-cell-highlight">1.00</td><td>0.76</td></tr>
+            <tr><th>P5</th><td>0.35</td><td class="matrix-cell-highlight">0.98</td><td class="matrix-cell-highlight">0.85</td><td>0.76</td><td class="matrix-cell-highlight">1.00</td></tr>
+        </table>
+
+        <h3>Step 2: Neighbors & Classification</h3>
+        <p>Count how many values in the row are ≥ 0.8. Requires MinPts ≥ 2.</p>
+
+        <table>
+            <tr><th>Point</th><th>Neighbors (≥ 0.8)</th><th>Count</th><th>Status</th></tr>
+            <tr><td>P1</td><td>P1</td><td>1</td><td><span class="type-noise">NOISE</span></td></tr>
+            <tr><td>P2</td><td>P2, P5</td><td>2</td><td><span class="type-core">CORE</span></td></tr>
+            <tr><td>P3</td><td>P3, P5</td><td>2</td><td><span class="type-core">CORE</span></td></tr>
+            <tr><td>P4</td><td>P4</td><td>1</td><td><span class="type-noise">NOISE</span></td></tr>
+            <tr><td>P5</td><td>P2, P3, P5</td><td>3</td><td><span class="type-core">CORE</span></td></tr>
+        </table>
+
+        <h3>Step 3: Conclusion</h3>
+        <ul>
+            <li><strong>Cluster:</strong> {P2, P3, P5} are all Core points connected to each other.</li>
+            <li><strong>Noise:</strong> P1 and P4 (they don't meet the threshold with anyone but themselves).</li>
+            <li><strong>Border Points:</strong> None in this dataset.</li>
+        </ul>
+
+    </section>
+
+    <footer>
+        <p style="text-align:center; color:#888; font-size:0.8rem; margin-top:50px;">© 2024 Data Mining Study Guide</p>
+    </footer>
+
+</body>
+</html>
