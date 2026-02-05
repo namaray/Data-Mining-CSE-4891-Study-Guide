@@ -9,7 +9,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             line-height: 1.6;
             color: #333;
-            max-width: 900px;
+            max-width: 1000px; /* Made slightly wider for the big table */
             margin: 0 auto;
             padding: 20px;
             background-color: #f4f6f8;
@@ -53,20 +53,26 @@
         }
         
         /* Tables */
-        table { border-collapse: collapse; width: 100%; margin: 15px 0; font-size: 0.85rem; }
-        th, td { border: 1px solid #ddd; padding: 6px; text-align: center; }
-        th { background-color: #f8f9fa; color: #333; }
+        table { border-collapse: collapse; width: 100%; margin: 15px 0; font-size: 0.8rem; }
+        th, td { border: 1px solid #ddd; padding: 5px; text-align: center; }
+        th { background-color: #f8f9fa; color: #333; font-weight: bold; position: sticky; left: 0; }
         
+        /* The first column (Labels P1, P2..) should stick when scrolling */
+        td:first-child, th:first-child {
+            position: sticky;
+            left: 0;
+            background-color: #f8f9fa;
+            z-index: 1;
+            border-right: 2px solid #ddd;
+        }
+
         /* Matrix specific styling */
-        .matrix-cell-highlight { background-color: #d4edda; font-weight: bold; } /* Matches condition */
+        .matrix-cell-highlight { background-color: #d4edda; font-weight: bold; color: #155724; } 
         
         /* Point Types */
         .type-core { background-color: #d4edda; color: #155724; font-weight: bold; padding: 2px 6px; border-radius: 4px; }
         .type-border { background-color: #fff3cd; color: #856404; font-weight: bold; padding: 2px 6px; border-radius: 4px; }
         .type-noise { background-color: #f8d7da; color: #721c24; font-weight: bold; padding: 2px 6px; border-radius: 4px; }
-
-        .cluster-1 { color: #0056b3; font-weight: bold; }
-        .cluster-2 { color: #e67e22; font-weight: bold; }
 
     </style>
 </head>
@@ -82,7 +88,7 @@
         <ul>
             <li><strong>Epsilon (ε):</strong> The radius around a point. (The "reach").</li>
             <li><strong>MinPts:</strong> The minimum number of points required inside that radius to form a dense region.</li>
-            <li><strong>Core Point:</strong> Has ≥ MinPts within its radius.</li>
+            <li><strong>Core Point:</strong> Has ≥ MinPts within its radius (including itself).</li>
             <li><strong>Border Point:</strong> Has < MinPts, but is a neighbor of a Core Point.</li>
             <li><strong>Noise Point:</strong> Has < MinPts and is NOT a neighbor of a Core Point.</li>
         </ul>
@@ -101,19 +107,68 @@
             <div>P9: (3,3)<br>P10: (2,6)<br>P11: (3,5)<br>P12: (2,4)</div>
         </div>
 
-        <h3>Step 2: Distance Matrix Calculation</h3>
-        <p>Calculate Euclidean Distance between all points. <br><em>Highlighting cells where Distance ≤ 1.9</em>.</p>
+        <h3>Step 2: Full Distance Matrix</h3>
+        <p>This table shows the Euclidean Distance between every point. <br>
+        <span style="background-color: #d4edda; padding: 2px 5px; border-radius: 3px;">Green Highlight</span> means Distance ≤ 1.9 (Neighbors).</p>
         
-        <div style="overflow-x: auto;">
-            <table>
-                <tr><th></th><th>P1</th><th>P2</th><th>P3</th><th>P4</th><th>P5</th><th>P6</th><th>P7</th><th>P8</th><th>P9</th><th>P10</th><th>P11</th><th>P12</th></tr>
-                <tr><th>P1</th><td class="matrix-cell-highlight">0</td><td class="matrix-cell-highlight">1.41</td><td>2.83</td><td>4.24</td><td>5.66</td><td>5.83</td><td>6.40</td><td>5.83</td><td>4.00</td><td class="matrix-cell-highlight">1.41</td><td>2.00</td><td>3.16</td></tr>
-                <tr><th>P2</th><td class="matrix-cell-highlight">1.41</td><td class="matrix-cell-highlight">0</td><td class="matrix-cell-highlight">1.41</td><td>2.83</td><td>4.24</td><td>4.47</td><td>5.00</td><td>4.47</td><td>3.16</td><td>2.00</td><td class="matrix-cell-highlight">1.41</td><td>2.83</td></tr>
-                <tr><th>P3</th><td>2.83</td><td class="matrix-cell-highlight">1.41</td><td class="matrix-cell-highlight">0</td><td class="matrix-cell-highlight">1.41</td><td>2.83</td><td>3.16</td><td>3.61</td><td>3.16</td><td>2.83</td><td>3.16</td><td>2.00</td><td>3.16</td></tr>
-                <tr><th>P4</th><td>4.24</td><td>2.83</td><td class="matrix-cell-highlight">1.41</td><td class="matrix-cell-highlight">0</td><td class="matrix-cell-highlight">1.41</td><td>2.00</td><td>2.24</td><td>2.00</td><td>3.61</td><td>4.47</td><td>3.16</td><td>4.00</td></tr>
-                <tr><th>P5</th><td>5.66</td><td>4.24</td><td>2.83</td><td class="matrix-cell-highlight">1.41</td><td class="matrix-cell-highlight">0</td><td class="matrix-cell-highlight">1.00</td><td class="matrix-cell-highlight">1.00</td><td class="matrix-cell-highlight">1.41</td><td>4.47</td><td>5.83</td><td>4.47</td><td>5.10</td></tr>
-                <!-- Partial table shown for clarity, mirroring PDF -->
-                <tr><th>P11</th><td>2.00</td><td class="matrix-cell-highlight">1.41</td><td>2.00</td><td>3.16</td><td>4.47</td><td>4.24</td><td>5.00</td><td>5.10</td><td>2.00</td><td class="matrix-cell-highlight">1.41</td><td class="matrix-cell-highlight">0</td><td class="matrix-cell-highlight">1.41</td></tr>
+        <div style="overflow-x: auto; border: 1px solid #ddd;">
+            <table style="min-width: 800px;">
+                <thead>
+                    <tr>
+                        <th style="z-index: 2;"></th> <!-- Corner cell -->
+                        <th>P1</th><th>P2</th><th>P3</th><th>P4</th><th>P5</th><th>P6</th><th>P7</th><th>P8</th><th>P9</th><th>P10</th><th>P11</th><th>P12</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>P1</th>
+                        <td class="matrix-cell-highlight">0</td><td class="matrix-cell-highlight">1.41</td><td>2.83</td><td>4.24</td><td>5.66</td><td>5.83</td><td>6.40</td><td>5.83</td><td>4.00</td><td class="matrix-cell-highlight">1.41</td><td>2.00</td><td>3.16</td>
+                    </tr>
+                    <tr>
+                        <th>P2</th>
+                        <td class="matrix-cell-highlight">1.41</td><td class="matrix-cell-highlight">0</td><td class="matrix-cell-highlight">1.41</td><td>2.83</td><td>4.24</td><td>4.47</td><td>5.00</td><td>4.47</td><td>3.16</td><td>2.00</td><td class="matrix-cell-highlight">1.41</td><td>2.83</td>
+                    </tr>
+                    <tr>
+                        <th>P3</th>
+                        <td>2.83</td><td class="matrix-cell-highlight">1.41</td><td class="matrix-cell-highlight">0</td><td class="matrix-cell-highlight">1.41</td><td>2.83</td><td>3.16</td><td>3.61</td><td>3.16</td><td>2.83</td><td>3.16</td><td>2.00</td><td>3.16</td>
+                    </tr>
+                    <tr>
+                        <th>P4</th>
+                        <td>4.24</td><td>2.83</td><td class="matrix-cell-highlight">1.41</td><td class="matrix-cell-highlight">0</td><td class="matrix-cell-highlight">1.41</td><td>2.00</td><td>2.24</td><td>2.00</td><td>3.61</td><td>4.47</td><td>3.16</td><td>4.00</td>
+                    </tr>
+                    <tr>
+                        <th>P5</th>
+                        <td>5.66</td><td>4.24</td><td>2.83</td><td class="matrix-cell-highlight">1.41</td><td class="matrix-cell-highlight">0</td><td class="matrix-cell-highlight">1.41</td><td class="matrix-cell-highlight">1.00</td><td class="matrix-cell-highlight">1.41</td><td>4.47</td><td>5.83</td><td>4.47</td><td>5.10</td>
+                    </tr>
+                    <tr>
+                        <th>P6</th>
+                        <td>5.83</td><td>4.47</td><td>3.16</td><td>2.00</td><td class="matrix-cell-highlight">1.41</td><td class="matrix-cell-highlight">0</td><td class="matrix-cell-highlight">1.00</td><td>2.83</td><td>3.16</td><td>5.66</td><td>4.24</td><td>4.47</td>
+                    </tr>
+                    <tr>
+                        <th>P7</th>
+                        <td>6.40</td><td>5.00</td><td>3.61</td><td>2.24</td><td class="matrix-cell-highlight">1.00</td><td class="matrix-cell-highlight">1.00</td><td class="matrix-cell-highlight">0</td><td>2.24</td><td>4.12</td><td>6.40</td><td>5.00</td><td>5.39</td>
+                    </tr>
+                    <tr>
+                        <th>P8</th>
+                        <td>5.83</td><td>4.47</td><td>3.16</td><td>2.00</td><td class="matrix-cell-highlight">1.41</td><td>2.83</td><td>2.24</td><td class="matrix-cell-highlight">0</td><td>5.10</td><td>6.32</td><td>5.10</td><td>6.00</td>
+                    </tr>
+                    <tr>
+                        <th>P9</th>
+                        <td>4.00</td><td>3.16</td><td>2.83</td><td>3.61</td><td>4.47</td><td>3.16</td><td>4.12</td><td>5.10</td><td class="matrix-cell-highlight">0</td><td>3.16</td><td>2.00</td><td class="matrix-cell-highlight">1.41</td>
+                    </tr>
+                    <tr>
+                        <th>P10</th>
+                        <td class="matrix-cell-highlight">1.41</td><td>2.00</td><td>3.16</td><td>4.47</td><td>5.83</td><td>5.66</td><td>6.40</td><td>6.32</td><td>3.16</td><td class="matrix-cell-highlight">0</td><td class="matrix-cell-highlight">1.41</td><td>2.00</td>
+                    </tr>
+                    <tr>
+                        <th>P11</th>
+                        <td>2.00</td><td class="matrix-cell-highlight">1.41</td><td>2.00</td><td>3.16</td><td>4.47</td><td>4.24</td><td>5.00</td><td>5.10</td><td>2.00</td><td class="matrix-cell-highlight">1.41</td><td class="matrix-cell-highlight">0</td><td class="matrix-cell-highlight">1.41</td>
+                    </tr>
+                    <tr>
+                        <th>P12</th>
+                        <td>3.16</td><td>2.83</td><td>3.16</td><td>4.00</td><td>5.10</td><td>4.47</td><td>5.39</td><td>6.00</td><td class="matrix-cell-highlight">1.41</td><td>2.00</td><td class="matrix-cell-highlight">1.41</td><td class="matrix-cell-highlight">0</td>
+                    </tr>
+                </tbody>
             </table>
         </div>
 
@@ -139,7 +194,6 @@
         <p><em>Note: P9 is Noise because it has < 4 neighbors and neither of its neighbors (P12) are Core points.</em></p>
 
         <h3>Step 4: Forming Clusters</h3>
-        <p>We connect Core points that are neighbors, then attach their border points.</p>
         <ul>
             <li><strong>Cluster 1:</strong> Started by <strong>P2</strong> and <strong>P11</strong> (connected via neighbors).
                 <br>Includes Borders: P1, P3, P10, P12.
@@ -183,8 +237,7 @@
         <h3>Step 3: Conclusion</h3>
         <ul>
             <li><strong>Cluster:</strong> {P2, P3, P5} are all Core points connected to each other.</li>
-            <li><strong>Noise:</strong> P1 and P4 (they don't meet the threshold with anyone but themselves).</li>
-            <li><strong>Border Points:</strong> None in this dataset.</li>
+            <li><strong>Noise:</strong> P1 and P4.</li>
         </ul>
 
     </section>
