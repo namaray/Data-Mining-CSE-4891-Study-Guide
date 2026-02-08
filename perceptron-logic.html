@@ -83,6 +83,7 @@
             font-size: 0.85rem;
             color: #555;
             font-style: italic;
+            margin-top: 5px;
         }
 
     </style>
@@ -127,8 +128,8 @@
                 </defs>
                 
                 <!-- Inputs -->
-                <text x="30" y="60" font-family="Arial" font-weight="bold" fill="#0d6efd">Input 1</text>
-                <text x="30" y="140" font-family="Arial" font-weight="bold" fill="#0d6efd">Input 2</text>
+                <text x="30" y="60" font-family="Arial" font-weight="bold" fill="#0d6efd">I₁</text>
+                <text x="30" y="140" font-family="Arial" font-weight="bold" fill="#0d6efd">I₂</text>
                 
                 <!-- Lines -->
                 <line x1="80" y1="55" x2="200" y2="90" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
@@ -141,7 +142,7 @@
                 <!-- Neuron -->
                 <circle cx="230" cy="100" r="40" fill="#fff" stroke="#0056b3" stroke-width="3"/>
                 <text x="230" y="95" font-family="Arial" font-weight="bold" text-anchor="middle">∑</text>
-                <text x="230" y="115" font-family="Arial" font-size="10" text-anchor="middle">Threshold: 0.9</text>
+                <text x="230" y="115" font-family="Arial" font-size="10" text-anchor="middle">Thresh: 0.9</text>
 
                 <!-- Output -->
                 <line x1="270" y1="100" x2="350" y2="100" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
@@ -158,7 +159,7 @@
             <tr>
                 <th>I1</th><th>I2</th>
                 <th>w1</th><th>w2</th>
-                <th class="col-center">Act (Sum)</th>
+                <th class="col-center">Sum</th>
                 <th class="col-center">Out</th>
                 <th class="col-center">Exp</th>
                 <th>Action & Explanation</th>
@@ -170,7 +171,7 @@
                 <td class="col-center">1.4</td><td class="col-center">1</td><td class="col-center">1</td>
                 <td class="action-ok">
                     Do nothing.
-                    <div class="explanation">1.4 > 0.9. Output is 1. Matches Expected.</div>
+                    <div class="explanation">1.4 > 0.9. Correct.</div>
                 </td>
             </tr>
             <!-- Row 2 -->
@@ -180,7 +181,7 @@
                 <td class="col-center">0.7</td><td class="col-center">0</td><td class="col-center">1</td>
                 <td class="action-update">
                     Increase w1.
-                    <div class="explanation">Sum (0.7) was too low (Failed Threshold).<br>Target is 1. We must INCREASE weights.<br>Only I1 is active (1), so we only change w1.<br><strong>New w1 = 0.7 + 0.2 = 0.9</strong></div>
+                    <div class="explanation">Sum (0.7) too low. Target is 1.<br><strong>New w1 = 0.7 + 0.2 = 0.9</strong></div>
                 </td>
             </tr>
             <!-- Row 3 -->
@@ -190,93 +191,18 @@
                 <td class="col-center">0.7</td><td class="col-center">0</td><td class="col-center">1</td>
                 <td class="action-update">
                     Increase w2.
-                    <div class="explanation">Sum (0.7) was too low.<br>Target is 1. We must INCREASE.<br>Only I2 is active, so we change w2.<br><strong>New w2 = 0.7 + 0.2 = 0.9</strong></div>
-                </td>
-            </tr>
-            <!-- Row 4 -->
-            <tr>
-                <td class="col-center">0</td><td class="col-center">0</td>
-                <td class="col-center">0.9</td><td class="col-center"><span class="val-change">0.9</span></td>
-                <td class="col-center">0</td><td class="col-center">0</td><td class="col-center">0</td>
-                <td class="action-ok">
-                    Do nothing.
-                    <div class="explanation">0 is not > 0.9. Output 0. Matches Expected.</div>
+                    <div class="explanation">Sum (0.7) too low. Target is 1.<br><strong>New w2 = 0.7 + 0.2 = 0.9</strong></div>
                 </td>
             </tr>
         </table>
-
-        <h3>Iteration 2</h3>
-        <p>Using the updated weights: <strong>w1 = 0.9, w2 = 0.9</strong>.</p>
-        <table>
-            <tr>
-                <th>I1</th><th>I2</th>
-                <th>w1</th><th>w2</th>
-                <th class="col-center">Act</th>
-                <th class="col-center">Out</th>
-                <th class="col-center">Exp</th>
-                <th>Action & Explanation</th>
-            </tr>
-            <tr>
-                <td class="col-center">1</td><td class="col-center">1</td>
-                <td class="col-center">0.9</td><td class="col-center">0.9</td>
-                <td class="col-center">1.8</td><td class="col-center">1</td><td class="col-center">1</td>
-                <td class="action-ok"><div class="explanation">Sum 1.8 > 0.9. Correct.</div></td>
-            </tr>
-            <tr>
-                <td class="col-center">1</td><td class="col-center">0</td>
-                <td class="col-center">0.9</td><td class="col-center">0.9</td>
-                <td class="col-center">0.9</td><td class="col-center">0*</td><td class="col-center">1</td>
-                <td class="action-ok">
-                    <div class="explanation">Wait! In your notes (Page 1), Threshold is 0.9. <br>If Act > 0.9 then 1. Here Act = 0.9. <br>Depending on strict inequality (> vs >=), this might be 0. <br><strong>However, in the PDF notes, the student stops here saying "Training Finishes".</strong> This implies 0.9 was accepted as a "Pass" or the logic considers >=. Let's assume Success.</div>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-center">0</td><td class="col-center">1</td>
-                <td class="col-center">0.9</td><td class="col-center">0.9</td>
-                <td class="col-center">0.9</td><td class="col-center">0*</td><td class="col-center">1</td>
-                <td class="action-ok"><div class="explanation">Same as above. Assumed Success based on notes.</div></td>
-            </tr>
-            <tr>
-                <td class="col-center">0</td><td class="col-center">0</td>
-                <td class="col-center">0.9</td><td class="col-center">0.9</td>
-                <td class="col-center">0</td><td class="col-center">0</td><td class="col-center">0</td>
-                <td class="action-ok"><div class="explanation">Correct.</div></td>
-            </tr>
-        </table>
+        <p><em>...After iteration 2, the weights stabilize at 0.9, 0.9.</em></p>
     </section>
 
-    <!-- PROBLEM 2: AND GATE -->
+    <!-- PROBLEM 2: AND GATE (2 INPUTS) -->
     <section>
-        <h2>Problem 2: AND Operation</h2>
+        <h2>Problem 2: AND Operation (2 Inputs)</h2>
         <p><strong>Goal:</strong> Output 1 <em>only if</em> BOTH inputs are 1.</p>
         
-        <!-- SVG DIAGRAM FOR AND GATE -->
-        <div class="diagram-box">
-            <svg width="400" height="200" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <marker id="arrowhead2" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
-                        <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
-                    </marker>
-                </defs>
-                
-                <text x="30" y="60" font-family="Arial" font-weight="bold" fill="#0d6efd">Input 1</text>
-                <text x="30" y="140" font-family="Arial" font-weight="bold" fill="#0d6efd">Input 2</text>
-                
-                <line x1="80" y1="55" x2="200" y2="90" stroke="#333" stroke-width="2" marker-end="url(#arrowhead2)"/>
-                <line x1="80" y1="135" x2="200" y2="110" stroke="#333" stroke-width="2" marker-end="url(#arrowhead2)"/>
-                
-                <text x="120" y="60" font-family="Arial" font-size="12" fill="#666">w1</text>
-                <text x="120" y="150" font-family="Arial" font-size="12" fill="#666">w2</text>
-
-                <circle cx="230" cy="100" r="40" fill="#fff" stroke="#d35400" stroke-width="3"/>
-                <text x="230" y="95" font-family="Arial" font-weight="bold" text-anchor="middle">∑</text>
-                <text x="230" y="115" font-family="Arial" font-size="10" text-anchor="middle">Threshold: 0.7</text>
-
-                <line x1="270" y1="100" x2="350" y2="100" stroke="#333" stroke-width="2" marker-end="url(#arrowhead2)"/>
-                <text x="360" y="105" font-family="Arial" font-weight="bold">Output</text>
-            </svg>
-        </div>
-
         <div style="background:#fafafa; padding:15px; border:1px dashed #ccc; margin-bottom: 20px;">
             <strong>Setup:</strong> Threshold = 0.7 | Learning Rate (e) = 0.3 | Initial Weights: w1=0.8, w2=0.8
         </div>
@@ -286,90 +212,152 @@
             <tr>
                 <th>I1</th><th>I2</th>
                 <th>w1</th><th>w2</th>
-                <th class="col-center">Act (Sum)</th>
+                <th class="col-center">Sum</th>
                 <th class="col-center">Out</th>
                 <th class="col-center">Exp</th>
                 <th>Action & Explanation</th>
             </tr>
-            <!-- Row 1 -->
             <tr>
                 <td class="col-center">1</td><td class="col-center">1</td>
                 <td class="col-center">0.8</td><td class="col-center">0.8</td>
                 <td class="col-center">1.6</td><td class="col-center">1</td><td class="col-center">1</td>
-                <td class="action-ok">
-                    Do nothing.
-                    <div class="explanation">1.6 > 0.7. Output 1. Matches.</div>
-                </td>
+                <td class="action-ok">Do nothing.</td>
             </tr>
-            <!-- Row 2 -->
             <tr>
                 <td class="col-center">1</td><td class="col-center">0</td>
                 <td class="col-center">0.8</td><td class="col-center">0.8</td>
                 <td class="col-center">0.8</td><td class="col-center">1</td><td class="col-center">0</td>
                 <td class="action-update">
                     Decrease w1.
-                    <div class="explanation">Sum (0.8) was too high (Passed Threshold).<br>Target is 0. We must DECREASE weights.<br>Only I1 is active (1), so we change w1.<br><strong>New w1 = 0.8 - 0.3 = 0.5</strong></div>
+                    <div class="explanation">Sum (0.8) too high. Target 0.<br><strong>New w1 = 0.8 - 0.3 = 0.5</strong></div>
                 </td>
             </tr>
-            <!-- Row 3 -->
             <tr>
                 <td class="col-center">0</td><td class="col-center">1</td>
                 <td class="col-center"><span class="val-change">0.5</span></td><td class="col-center">0.8</td>
                 <td class="col-center">0.8</td><td class="col-center">1</td><td class="col-center">0</td>
                 <td class="action-update">
                     Decrease w2.
-                    <div class="explanation">Sum (0.8) was too high.<br>Only I2 is active, so we change w2.<br><strong>New w2 = 0.8 - 0.3 = 0.5</strong></div>
-                </td>
-            </tr>
-            <!-- Row 4 -->
-            <tr>
-                <td class="col-center">0</td><td class="col-center">0</td>
-                <td class="col-center">0.5</td><td class="col-center"><span class="val-change">0.5</span></td>
-                <td class="col-center">0</td><td class="col-center">0</td><td class="col-center">0</td>
-                <td class="action-ok">
-                    Do nothing.
+                    <div class="explanation">Sum (0.8) too high. Target 0.<br><strong>New w2 = 0.8 - 0.3 = 0.5</strong></div>
                 </td>
             </tr>
         </table>
+    </section>
 
-        <h3>Iteration 2</h3>
-        <p>Using the updated weights: <strong>w1 = 0.5, w2 = 0.5</strong>.</p>
+    <!-- PROBLEM 3: AND GATE (3 INPUTS) -->
+    <section>
+        <h2>Problem 3: AND Operation (3 Inputs)</h2>
+        <p><strong>Goal:</strong> Output 1 only if I1, I2, AND I3 are all 1.</p>
+
+        <!-- SVG DIAGRAM FOR 3-INPUT AND GATE -->
+        <div class="diagram-box">
+            <svg width="400" height="250" viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <marker id="arrowhead3" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
+                    </marker>
+                </defs>
+                
+                <text x="30" y="60" font-family="Arial" font-weight="bold" fill="#0d6efd">I₁</text>
+                <text x="30" y="125" font-family="Arial" font-weight="bold" fill="#0d6efd">I₂</text>
+                <text x="30" y="190" font-family="Arial" font-weight="bold" fill="#0d6efd">I₃</text>
+                
+                <line x1="60" y1="55" x2="200" y2="100" stroke="#333" stroke-width="2" marker-end="url(#arrowhead3)"/>
+                <line x1="60" y1="120" x2="200" y2="120" stroke="#333" stroke-width="2" marker-end="url(#arrowhead3)"/>
+                <line x1="60" y1="185" x2="200" y2="140" stroke="#333" stroke-width="2" marker-end="url(#arrowhead3)"/>
+                
+                <text x="100" y="60" font-family="Arial" font-size="12" fill="#666">w1</text>
+                <text x="100" y="115" font-family="Arial" font-size="12" fill="#666">w2</text>
+                <text x="100" y="180" font-family="Arial" font-size="12" fill="#666">w3</text>
+
+                <circle cx="230" cy="120" r="45" fill="#fff" stroke="#28a745" stroke-width="3"/>
+                <text x="230" y="115" font-family="Arial" font-weight="bold" text-anchor="middle">∑</text>
+                <text x="230" y="135" font-family="Arial" font-size="10" text-anchor="middle">Thresh: 0.9</text>
+
+                <line x1="275" y1="120" x2="350" y2="120" stroke="#333" stroke-width="2" marker-end="url(#arrowhead3)"/>
+                <text x="360" y="125" font-family="Arial" font-weight="bold">Output</text>
+            </svg>
+        </div>
+
+        <div style="background:#fafafa; padding:15px; border:1px dashed #ccc; margin-bottom: 20px;">
+            <strong>Setup:</strong> Threshold = 0.9 | Learning Rate (e) = 0.4 | Initial Weights: w1=0.8, w2=0.8, w3=0.8
+        </div>
+
+        <h3>Iteration 1</h3>
         <table>
             <tr>
-                <th>I1</th><th>I2</th>
-                <th>w1</th><th>w2</th>
-                <th class="col-center">Act</th>
+                <th>I1</th><th>I2</th><th>I3</th>
+                <th>w1</th><th>w2</th><th>w3</th>
+                <th class="col-center">Sum</th>
                 <th class="col-center">Out</th>
                 <th class="col-center">Exp</th>
                 <th>Action & Explanation</th>
             </tr>
             <tr>
-                <td class="col-center">1</td><td class="col-center">1</td>
-                <td class="col-center">0.5</td><td class="col-center">0.5</td>
-                <td class="col-center">1.0</td><td class="col-center">1</td><td class="col-center">1</td>
-                <td class="action-ok"><div class="explanation">Sum 1.0 > 0.7. Matches.</div></td>
+                <td class="col-center">1</td><td class="col-center">1</td><td class="col-center">1</td>
+                <td>0.8</td><td>0.8</td><td>0.8</td>
+                <td class="col-center">2.4</td><td class="col-center">1</td><td class="col-center">1</td>
+                <td class="action-ok">Do nothing.</td>
             </tr>
             <tr>
-                <td class="col-center">1</td><td class="col-center">0</td>
-                <td class="col-center">0.5</td><td class="col-center">0.5</td>
-                <td class="col-center">0.5</td><td class="col-center">0</td><td class="col-center">0</td>
-                <td class="action-ok"><div class="explanation">Sum 0.5 is NOT > 0.7. Output 0. Matches.</div></td>
+                <td class="col-center">1</td><td class="col-center">1</td><td class="col-center">0</td>
+                <td>0.8</td><td>0.8</td><td>0.8</td>
+                <td class="col-center">1.6</td><td class="col-center">1</td><td class="col-center">0</td>
+                <td class="action-update">
+                    Decrease Active w by 0.4.
+                    <div class="explanation">Sum (1.6) > 0.9. Target 0.<br>Inputs I1 and I2 are active.<br>New w1 = 0.4, New w2 = 0.4.</div>
+                </td>
             </tr>
             <tr>
-                <td class="col-center">0</td><td class="col-center">1</td>
-                <td class="col-center">0.5</td><td class="col-center">0.5</td>
-                <td class="col-center">0.5</td><td class="col-center">0</td><td class="col-center">0</td>
-                <td class="action-ok"><div class="explanation">Sum 0.5 is NOT > 0.7. Output 0. Matches.</div></td>
+                <td class="col-center">1</td><td class="col-center">0</td><td class="col-center">1</td>
+                <td><span class="val-change">0.4</span></td><td><span class="val-change">0.4</span></td><td>0.8</td>
+                <td class="col-center">1.2</td><td class="col-center">1</td><td class="col-center">0</td>
+                <td class="action-update">
+                    Decrease Active w by 0.4.
+                    <div class="explanation">Sum (0.4+0+0.8 = 1.2) > 0.9.<br>Target 0. Decrease I1 and I3.<br>New w1 = 0, New w3 = 0.4.</div>
+                </td>
+            </tr>
+        </table>
+
+        <h3>Final Stable State</h3>
+        <p>After several iterations, the network learns the pattern. (Page 7 of notes).</p>
+        <p><strong>Final Weights:</strong> w1=0.4, w2=0.4, w3=0.4</p>
+        
+        <table>
+            <tr>
+                <th>I1</th><th>I2</th><th>I3</th>
+                <th>w1</th><th>w2</th><th>w3</th>
+                <th class="col-center">Sum</th>
+                <th class="col-center">Out</th>
+                <th class="col-center">Exp</th>
+                <th>Action</th>
             </tr>
             <tr>
-                <td class="col-center">0</td><td class="col-center">0</td>
-                <td class="col-center">0.5</td><td class="col-center">0.5</td>
-                <td class="col-center">0</td><td class="col-center">0</td><td class="col-center">0</td>
-                <td class="action-ok"><div class="explanation">Correct.</div></td>
+                <td class="col-center">1</td><td class="col-center">1</td><td class="col-center">1</td>
+                <td>0.4</td><td>0.4</td><td>0.4</td>
+                <td class="col-center">1.2</td><td class="col-center">1</td><td class="col-center">1</td>
+                <td class="action-ok">OK (1.2 > 0.9)</td>
+            </tr>
+            <tr>
+                <td class="col-center">1</td><td class="col-center">1</td><td class="col-center">0</td>
+                <td>0.4</td><td>0.4</td><td>0.4</td>
+                <td class="col-center">0.8</td><td class="col-center">0</td><td class="col-center">0</td>
+                <td class="action-ok">OK (0.8 < 0.9)</td>
+            </tr>
+            <tr>
+                <td class="col-center">1</td><td class="col-center">0</td><td class="col-center">1</td>
+                <td>0.4</td><td>0.4</td><td>0.4</td>
+                <td class="col-center">0.8</td><td class="col-center">0</td><td class="col-center">0</td>
+                <td class="action-ok">OK</td>
+            </tr>
+            <tr>
+                <td class="col-center">0</td><td class="col-center">1</td><td class="col-center">1</td>
+                <td>0.4</td><td>0.4</td><td>0.4</td>
+                <td class="col-center">0.8</td><td class="col-center">0</td><td class="col-center">0</td>
+                <td class="action-ok">OK</td>
             </tr>
         </table>
         
-        <p class="action-ok" style="text-align: center; margin-top: 30px; font-size: 1.2rem;">✅ Training Finished. The network has learned the Logic!</p>
     </section>
 
     <footer>
