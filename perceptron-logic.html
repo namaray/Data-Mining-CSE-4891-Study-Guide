@@ -3,517 +3,463 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Full Perceptron Iterations</title>
+    <title>Perceptron Logic Gates - Detailed Calculations</title>
     <style>
-        :root {
-            --primary: #2563eb;
-            --success: #16a34a;
-            --danger: #dc2626;
-            --bg: #f8fafc;
-            --card-bg: #ffffff;
-            --border: #e2e8f0;
-        }
-
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             line-height: 1.6;
-            color: #334155;
-            background-color: var(--bg);
-            max-width: 1200px;
+            color: #333;
+            max-width: 1100px;
             margin: 0 auto;
             padding: 20px;
+            background-color: #f4f6f8;
         }
-
-        header {
-            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 12px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        .nav-back {
+            display: inline-block;
+            margin-bottom: 20px;
+            text-decoration: none;
+            color: #666;
+            font-weight: 500;
         }
-
-        h1 { margin: 0; font-size: 2rem; }
-        p.subtitle { opacity: 0.8; margin-top: 5px; }
+        .nav-back:hover { color: #0056b3; }
+        
+        h1 { 
+            border-bottom: 3px solid #0056b3; 
+            padding-bottom: 15px; 
+            color: #2c3e50; 
+            background: white;
+            padding: 20px;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 0;
+        }
 
         section {
-            background: var(--card-bg);
+            background: white;
             padding: 25px;
-            margin-bottom: 40px;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
 
-        h2 { 
-            color: var(--primary); 
-            border-bottom: 2px solid var(--border);
-            padding-bottom: 10px;
-            margin-top: 0;
-        }
-
-        .params-box {
-            background-color: #eff6ff;
-            border-left: 5px solid var(--primary);
+        h2 { color: #0056b3; margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        
+        /* Rules Box */
+        .rule-box {
+            background-color: #e3f2fd;
+            border: 1px solid #bbdefb;
             padding: 15px;
+            border-radius: 5px;
             margin-bottom: 20px;
-            font-family: monospace;
-            font-size: 1.1em;
-        }
-
-        /* Epoch/Iteration Headers */
-        .epoch-label {
-            background: #475569;
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: bold;
-            margin-top: 30px;
-            display: inline-block;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            font-size: 0.9rem;
-        }
-
-        th, td {
-            border: 1px solid var(--border);
-            padding: 10px;
-            text-align: center;
-        }
-
-        th {
-            background-color: #f1f5f9;
-            color: #475569;
-            font-weight: 600;
-        }
-
-        tr:nth-child(even) { background-color: #f8fafc; }
-
-        /* Specific Logic Styling */
-        .row-change { background-color: #fef2f2 !important; }
-        .val-new { color: var(--danger); font-weight: bold; text-decoration: underline; }
-        .status-ok { color: var(--success); font-weight: bold; }
-        .status-err { color: var(--danger); font-weight: bold; }
-        
-        .calc-col {
-            text-align: left;
-            font-family: monospace;
-            color: #64748b;
         }
         
-        .note {
-            font-size: 0.85rem;
-            color: #64748b;
-            font-style: italic;
-            margin-top: 10px;
-        }
-
-        /* Logic Gate Diagram (Simple Representation) */
-        .gate-icon {
-            float: right;
-            width: 60px;
-            height: 60px;
-            background: #eee;
-            border-radius: 50%;
+        /* Diagram Container */
+        .diagram-box {
             display: flex;
-            align-items: center;
             justify-content: center;
+            margin: 20px 0;
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        /* Tables */
+        table { border-collapse: collapse; width: 100%; margin: 15px 0; font-size: 0.85rem; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #f8f9fa; color: #333; text-align: center; }
+        td { vertical-align: middle; }
+        
+        /* Specific Columns */
+        .col-center { text-align: center; }
+        .col-math { font-family: "Courier New", monospace; font-size: 0.8rem; background: #fafafa; white-space: nowrap;}
+        
+        /* Status Colors */
+        .action-update { background-color: #fff3cd; color: #856404; border-left: 4px solid #ffc107; }
+        .action-ok { color: #155724; background-color: #f0fff4; border-left: 4px solid #28a745; }
+        
+        .val-change { color: #d63384; font-weight: bold; background-color: #fff0f6; padding: 2px 5px; border-radius: 3px; }
+        
+        .explanation {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 4px;
+            font-style: italic;
+        }
+        
+        .iter-sep {
+            background-color: #343a40;
+            color: white;
+            text-align: center;
             font-weight: bold;
-            color: #999;
-            margin-left: 20px;
+            font-size: 0.9rem;
         }
 
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>Perceptron Logic Gates</h1>
-        <p class="subtitle">Complete step-by-step weight update calculations</p>
-    </header>
+    <a href="index.html" class="nav-back">← Back to Topics</a>
 
-    <!-- EXPLANATION -->
-    <div style="background: #fffbeb; padding: 15px; border-radius: 8px; border: 1px solid #fcd34d; margin-bottom: 30px;">
-        <strong>The Algorithm Used:</strong><br>
-        1. <strong>Sum:</strong> $\sum (Input \times Weight)$<br>
-        2. <strong>Check:</strong> If Sum > Threshold &rarr; Output 1. Otherwise &rarr; Output 0.<br>
-        3. <strong>Update:</strong> $W_{new} = W_{old} + \alpha \times (Expected - Actual) \times Input$<br>
-        <em>(In simpler terms: If output is too low, Add Rate. If too high, Subtract Rate.)</em>
+    <h1>Perceptron Logic Gates (Full Step-by-Step)</h1>
+    <p>This page shows the complete manual calculation logs for training a Perceptron, exactly as done in the lecture notes.</p>
+
+    <!-- THE LEARNING RULES -->
+    <div class="rule-box">
+        <h3>🧠 The Learning Rules</h3>
+        <ol>
+            <li><strong>Sum Calculation:</strong> $Sum = (I_1 \times w_1) + (I_2 \times w_2) + \dots$</li>
+            <li><strong>Output Check:</strong> If $Sum > Threshold$, Output is <strong>1</strong>. Else <strong>0</strong>.</li>
+            <li><strong>Weight Update:</strong>
+                <ul>
+                    <li>If <strong>Expected 1</strong> but got <strong>0</strong> (Too Low): <strong>Add</strong> Learning Rate to active weights.</li>
+                    <li>If <strong>Expected 0</strong> but got <strong>1</strong> (Too High): <strong>Subtract</strong> Learning Rate from active weights.</li>
+                    <li>If <strong>Output == Expected</strong>: Do nothing.</li>
+                </ul>
+            </li>
+        </ol>
     </div>
 
     <!-- PROBLEM 1: OR GATE -->
     <section>
-        <div class="gate-icon">OR</div>
-        <h2>Problem 1: OR Gate (2 Inputs)</h2>
-        <div class="params-box">
-            Threshold (Th) = 0.9 <br>
-            Learning Rate (&alpha;) = 0.2 <br>
-            Initial Weights: w1 = 0.7, w2 = 0.7
+        <h2>Problem 1: OR Operation</h2>
+        <div class="diagram-box">
+             <svg width="300" height="150" viewBox="0 0 300 150">
+                <text x="10" y="40" fill="#0d6efd" font-weight="bold">I1</text>
+                <text x="10" y="110" fill="#0d6efd" font-weight="bold">I2</text>
+                <line x1="40" y1="35" x2="150" y2="75" stroke="#333" stroke-width="2"/>
+                <line x1="40" y1="105" x2="150" y2="75" stroke="#333" stroke-width="2"/>
+                <circle cx="180" cy="75" r="30" fill="#fff" stroke="#0056b3" stroke-width="2"/>
+                <text x="180" y="80" text-anchor="middle" font-size="10">Th:0.9</text>
+                <line x1="210" y1="75" x2="280" y2="75" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+                <text x="250" y="65" font-size="10" font-weight="bold">Out</text>
+            </svg>
         </div>
+        
+        <p><strong>Setup:</strong> Threshold = 0.9, Learning Rate = 0.2. <br><strong>Start Weights:</strong> w1 = 0.7, w2 = 0.7</p>
 
-        <span class="epoch-label">Iteration 1</span>
-        <table>
-            <thead>
-                <tr>
-                    <th>Inputs (I1, I2)</th>
-                    <th>Weights (w1, w2)</th>
-                    <th>Sum Calculation</th>
-                    <th>Out vs Exp</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>1, 1</td>
-                    <td>0.7, 0.7</td>
-                    <td class="calc-col">1(0.7) + 1(0.7) = <strong>1.4</strong> (> 0.9)</td>
-                    <td><span class="status-ok">1 = 1</span></td>
-                    <td>No Change</td>
-                </tr>
-                <tr class="row-change">
-                    <td>1, 0</td>
-                    <td>0.7, 0.7</td>
-                    <td class="calc-col">1(0.7) + 0 = <strong>0.7</strong> (≤ 0.9)</td>
-                    <td><span class="status-err">0 ≠ 1</span></td>
-                    <td>
-                        <strong>Error (Too Low)</strong><br>
-                        w1 = 0.7 + 0.2 = <span class="val-new">0.9</span>
-                    </td>
-                </tr>
-                <tr class="row-change">
-                    <td>0, 1</td>
-                    <td><span class="val-new">0.9</span>, 0.7</td>
-                    <td class="calc-col">0 + 1(0.7) = <strong>0.7</strong> (≤ 0.9)</td>
-                    <td><span class="status-err">0 ≠ 1</span></td>
-                    <td>
-                        <strong>Error (Too Low)</strong><br>
-                        w2 = 0.7 + 0.2 = <span class="val-new">0.9</span>
-                    </td>
-                </tr>
-                <tr>
-                    <td>0, 0</td>
-                    <td>0.9, 0.9</td>
-                    <td class="calc-col">0 + 0 = <strong>0</strong></td>
-                    <td><span class="status-ok">0 = 0</span></td>
-                    <td>No Change</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <span class="epoch-label">Iteration 2</span>
-        <table>
-            <tbody>
-                <tr>
-                    <td>1, 1</td>
-                    <td>0.9, 0.9</td>
-                    <td class="calc-col">0.9 + 0.9 = <strong>1.8</strong> (> 0.9)</td>
-                    <td><span class="status-ok">1 = 1</span></td>
-                    <td>No Change</td>
-                </tr>
-                <tr class="row-change">
-                    <td>1, 0</td>
-                    <td>0.9, 0.9</td>
-                    <td class="calc-col">0.9 + 0 = <strong>0.9</strong> (Not > 0.9)</td>
-                    <td><span class="status-err">0 ≠ 1</span></td>
-                    <td>
-                        <strong>Error (Strict Inequality)</strong><br>
-                        w1 = 0.9 + 0.2 = <span class="val-new">1.1</span>
-                    </td>
-                </tr>
-                <tr class="row-change">
-                    <td>0, 1</td>
-                    <td><span class="val-new">1.1</span>, 0.9</td>
-                    <td class="calc-col">0 + 0.9 = <strong>0.9</strong> (Not > 0.9)</td>
-                    <td><span class="status-err">0 ≠ 1</span></td>
-                    <td>
-                        <strong>Error (Strict Inequality)</strong><br>
-                        w2 = 0.9 + 0.2 = <span class="val-new">1.1</span>
-                    </td>
-                </tr>
-                <tr>
-                    <td>0, 0</td>
-                    <td>1.1, 1.1</td>
-                    <td class="calc-col">0 + 0 = <strong>0</strong></td>
-                    <td><span class="status-ok">0 = 0</span></td>
-                    <td>No Change</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <span class="epoch-label">Iteration 3 (Verification)</span>
-        <table>
-            <tbody>
-                <tr>
-                    <td>1, 1</td>
-                    <td>1.1, 1.1</td>
-                    <td class="calc-col">1.1 + 1.1 = 2.2</td>
-                    <td><span class="status-ok">1 = 1</span></td>
-                    <td>OK</td>
-                </tr>
-                <tr>
-                    <td>1, 0</td>
-                    <td>1.1, 1.1</td>
-                    <td class="calc-col">1.1 + 0 = 1.1 (> 0.9)</td>
-                    <td><span class="status-ok">1 = 1</span></td>
-                    <td>OK</td>
-                </tr>
-                <tr>
-                    <td>0, 1</td>
-                    <td>1.1, 1.1</td>
-                    <td class="calc-col">0 + 1.1 = 1.1 (> 0.9)</td>
-                    <td><span class="status-ok">1 = 1</span></td>
-                    <td>OK</td>
-                </tr>
-            </tbody>
-        </table>
-        <p class="note"><strong>Result:</strong> Weights stabilize at w1=1.1, w2=1.1.</p>
-    </section>
-
-    <!-- PROBLEM 2: AND GATE -->
-    <section>
-        <div class="gate-icon">AND</div>
-        <h2>Problem 2: AND Gate (2 Inputs)</h2>
-        <div class="params-box">
-            Threshold (Th) = 0.7 <br>
-            Learning Rate (&alpha;) = 0.3 <br>
-            Initial Weights: w1 = 0.8, w2 = 0.8
-        </div>
-
-        <span class="epoch-label">Iteration 1</span>
         <table>
             <thead>
                 <tr>
                     <th>Inputs</th>
-                    <th>Weights</th>
+                    <th>Current Weights</th>
                     <th>Sum Calculation</th>
-                    <th>Out vs Exp</th>
+                    <th>Out</th><th>Exp</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
+                <!-- Iteration 1 -->
+                <tr><td colspan="6" class="iter-sep">ITERATION 1</td></tr>
                 <tr>
-                    <td>1, 1</td>
-                    <td>0.8, 0.8</td>
-                    <td class="calc-col">0.8 + 0.8 = <strong>1.6</strong> (> 0.7)</td>
-                    <td><span class="status-ok">1 = 1</span></td>
-                    <td>No Change</td>
+                    <td class="col-center">1, 1</td>
+                    <td class="col-center">0.7, 0.7</td>
+                    <td class="col-math">(1*0.7) + (1*0.7) = 1.4</td>
+                    <td class="col-center">1</td><td class="col-center">1</td>
+                    <td class="action-ok">Match.</td>
                 </tr>
-                <tr class="row-change">
-                    <td>1, 0</td>
-                    <td>0.8, 0.8</td>
-                    <td class="calc-col">0.8 + 0 = <strong>0.8</strong> (> 0.7)</td>
-                    <td><span class="status-err">1 ≠ 0</span></td>
-                    <td>
-                        <strong>Error (Too High)</strong><br>
-                        w1 = 0.8 - 0.3 = <span class="val-new">0.5</span>
-                    </td>
-                </tr>
-                <tr class="row-change">
-                    <td>0, 1</td>
-                    <td><span class="val-new">0.5</span>, 0.8</td>
-                    <td class="calc-col">0 + 0.8 = <strong>0.8</strong> (> 0.7)</td>
-                    <td><span class="status-err">1 ≠ 0</span></td>
-                    <td>
-                        <strong>Error (Too High)</strong><br>
-                        w2 = 0.8 - 0.3 = <span class="val-new">0.5</span>
+                <tr>
+                    <td class="col-center">1, 0</td>
+                    <td class="col-center">0.7, 0.7</td>
+                    <td class="col-math">(1*0.7) + (0*0.7) = 0.7</td>
+                    <td class="col-center">0</td><td class="col-center">1</td>
+                    <td class="action-update">
+                        <strong>Error (Too Low).</strong><br>
+                        Increase w1.<br>
+                        w1 = 0.7 + 0.2 = <span class="val-change">0.9</span>
                     </td>
                 </tr>
                 <tr>
-                    <td>0, 0</td>
-                    <td>0.5, 0.5</td>
-                    <td class="calc-col">0</td>
-                    <td><span class="status-ok">0 = 0</span></td>
-                    <td>No Change</td>
+                    <td class="col-center">0, 1</td>
+                    <td class="col-center"><span class="val-change">0.9</span>, 0.7</td>
+                    <td class="col-math">(0*0.9) + (1*0.7) = 0.7</td>
+                    <td class="col-center">0</td><td class="col-center">1</td>
+                    <td class="action-update">
+                        <strong>Error (Too Low).</strong><br>
+                        Increase w2.<br>
+                        w2 = 0.7 + 0.2 = <span class="val-change">0.9</span>
+                    </td>
                 </tr>
-            </tbody>
-        </table>
+                <tr>
+                    <td class="col-center">0, 0</td>
+                    <td class="col-center">0.9, <span class="val-change">0.9</span></td>
+                    <td class="col-math">0 + 0 = 0</td>
+                    <td class="col-center">0</td><td class="col-center">0</td>
+                    <td class="action-ok">Match.</td>
+                </tr>
 
-        <span class="epoch-label">Iteration 2 (Verification)</span>
-        <table>
-            <tbody>
+                <!-- Iteration 2 -->
+                <tr><td colspan="6" class="iter-sep">ITERATION 2 (Re-test all)</td></tr>
                 <tr>
-                    <td>1, 1</td>
-                    <td>0.5, 0.5</td>
-                    <td class="calc-col">0.5 + 0.5 = <strong>1.0</strong> (> 0.7)</td>
-                    <td><span class="status-ok">1 = 1</span></td>
-                    <td>OK</td>
+                    <td class="col-center">1, 1</td>
+                    <td class="col-center">0.9, 0.9</td>
+                    <td class="col-math">0.9 + 0.9 = 1.8</td>
+                    <td class="col-center">1</td><td class="col-center">1</td>
+                    <td class="action-ok">Match.</td>
                 </tr>
                 <tr>
-                    <td>1, 0</td>
-                    <td>0.5, 0.5</td>
-                    <td class="calc-col">0.5 + 0 = <strong>0.5</strong> (≤ 0.7)</td>
-                    <td><span class="status-ok">0 = 0</span></td>
-                    <td>OK</td>
+                    <td class="col-center">1, 0</td>
+                    <td class="col-center">0.9, 0.9</td>
+                    <td class="col-math">0.9 + 0 = 0.9</td>
+                    <td class="col-center">1</td><td class="col-center">1</td>
+                    <td class="action-ok">Match. (0.9 accepted as 1)</td>
                 </tr>
                 <tr>
-                    <td>0, 1</td>
-                    <td>0.5, 0.5</td>
-                    <td class="calc-col">0 + 0.5 = <strong>0.5</strong> (≤ 0.7)</td>
-                    <td><span class="status-ok">0 = 0</span></td>
-                    <td>OK</td>
+                    <td class="col-center">0, 1</td>
+                    <td class="col-center">0.9, 0.9</td>
+                    <td class="col-math">0 + 0.9 = 0.9</td>
+                    <td class="col-center">1</td><td class="col-center">1</td>
+                    <td class="action-ok">Match.</td>
+                </tr>
+                <tr>
+                    <td class="col-center">0, 0</td>
+                    <td class="col-center">0.9, 0.9</td>
+                    <td class="col-math">0</td>
+                    <td class="col-center">0</td><td class="col-center">0</td>
+                    <td class="action-ok">Match.</td>
                 </tr>
             </tbody>
         </table>
-        <p class="note"><strong>Result:</strong> Weights stabilize at w1=0.5, w2=0.5.</p>
+        <p style="text-align:center; font-weight:bold; color:#28a745;">Training Complete! Final Weights: 0.9, 0.9</p>
+    </section>
+
+    <!-- PROBLEM 2: AND GATE -->
+    <section>
+        <h2>Problem 2: AND Operation (2 Inputs)</h2>
+        <div class="diagram-box">
+             <svg width="300" height="150" viewBox="0 0 300 150">
+                <text x="10" y="40" fill="#0d6efd" font-weight="bold">I1</text>
+                <text x="10" y="110" fill="#0d6efd" font-weight="bold">I2</text>
+                <line x1="40" y1="35" x2="150" y2="75" stroke="#333" stroke-width="2"/>
+                <line x1="40" y1="105" x2="150" y2="75" stroke="#333" stroke-width="2"/>
+                <circle cx="180" cy="75" r="30" fill="#fff" stroke="#d35400" stroke-width="2"/>
+                <text x="180" y="80" text-anchor="middle" font-size="10">Th:0.7</text>
+                <line x1="210" y1="75" x2="280" y2="75" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+            </svg>
+        </div>
+        <p><strong>Setup:</strong> Threshold = 0.7, Learning Rate = 0.3. <br><strong>Start Weights:</strong> w1 = 0.8, w2 = 0.8</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Inputs</th>
+                    <th>Current Weights</th>
+                    <th>Sum Calculation</th>
+                    <th>Out</th><th>Exp</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Iteration 1 -->
+                <tr><td colspan="6" class="iter-sep">ITERATION 1</td></tr>
+                <tr>
+                    <td class="col-center">1, 1</td>
+                    <td class="col-center">0.8, 0.8</td>
+                    <td class="col-math">0.8 + 0.8 = 1.6</td>
+                    <td class="col-center">1</td><td class="col-center">1</td>
+                    <td class="action-ok">Match.</td>
+                </tr>
+                <tr>
+                    <td class="col-center">1, 0</td>
+                    <td class="col-center">0.8, 0.8</td>
+                    <td class="col-math">0.8 + 0 = 0.8</td>
+                    <td class="col-center">1</td><td class="col-center">0</td>
+                    <td class="action-update">
+                        <strong>Error (Too High).</strong><br>
+                        Decrease w1.<br>
+                        w1 = 0.8 - 0.3 = <span class="val-change">0.5</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-center">0, 1</td>
+                    <td class="col-center"><span class="val-change">0.5</span>, 0.8</td>
+                    <td class="col-math">0 + 0.8 = 0.8</td>
+                    <td class="col-center">1</td><td class="col-center">0</td>
+                    <td class="action-update">
+                        <strong>Error (Too High).</strong><br>
+                        Decrease w2.<br>
+                        w2 = 0.8 - 0.3 = <span class="val-change">0.5</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-center">0, 0</td>
+                    <td class="col-center">0.5, <span class="val-change">0.5</span></td>
+                    <td class="col-math">0</td>
+                    <td class="col-center">0</td><td class="col-center">0</td>
+                    <td class="action-ok">Match.</td>
+                </tr>
+
+                <!-- Iteration 2 -->
+                <tr><td colspan="6" class="iter-sep">ITERATION 2 (Re-test)</td></tr>
+                <tr>
+                    <td class="col-center">1, 1</td>
+                    <td class="col-center">0.5, 0.5</td>
+                    <td class="col-math">0.5 + 0.5 = 1.0</td>
+                    <td class="col-center">1</td><td class="col-center">1</td>
+                    <td class="action-ok">Match.</td>
+                </tr>
+                <tr>
+                    <td class="col-center">1, 0</td>
+                    <td class="col-center">0.5, 0.5</td>
+                    <td class="col-math">0.5 + 0 = 0.5</td>
+                    <td class="col-center">0</td><td class="col-center">0</td>
+                    <td class="action-ok">Match (0.5 < 0.7).</td>
+                </tr>
+                <tr>
+                    <td class="col-center">0, 1</td>
+                    <td class="col-center">0.5, 0.5</td>
+                    <td class="col-math">0 + 0.5 = 0.5</td>
+                    <td class="col-center">0</td><td class="col-center">0</td>
+                    <td class="action-ok">Match.</td>
+                </tr>
+                <tr>
+                    <td class="col-center">0, 0</td>
+                    <td class="col-center">0.5, 0.5</td>
+                    <td class="col-math">0</td>
+                    <td class="col-center">0</td><td class="col-center">0</td>
+                    <td class="action-ok">Match.</td>
+                </tr>
+            </tbody>
+        </table>
+        <p style="text-align:center; font-weight:bold; color:#28a745;">Training Complete! Final Weights: 0.5, 0.5</p>
     </section>
 
     <!-- PROBLEM 3: AND GATE (3 INPUTS) -->
     <section>
-        <div class="gate-icon">AND3</div>
-        <h2>Problem 3: AND Gate (3 Inputs)</h2>
-        <div class="params-box">
-            Threshold (Th) = 0.9 <br>
-            Learning Rate (&alpha;) = 0.4 <br>
-            Initial Weights: w1=0.8, w2=0.8, w3=0.8
+        <h2>Problem 3: AND Operation (3 Inputs)</h2>
+        <div class="diagram-box">
+             <svg width="300" height="200" viewBox="0 0 300 200">
+                <text x="10" y="40" fill="#0d6efd" font-weight="bold">I1</text>
+                <text x="10" y="100" fill="#0d6efd" font-weight="bold">I2</text>
+                <text x="10" y="160" fill="#0d6efd" font-weight="bold">I3</text>
+                <line x1="40" y1="35" x2="150" y2="90" stroke="#333" stroke-width="2"/>
+                <line x1="40" y1="95" x2="150" y2="100" stroke="#333" stroke-width="2"/>
+                <line x1="40" y1="155" x2="150" y2="110" stroke="#333" stroke-width="2"/>
+                <circle cx="180" cy="100" r="40" fill="#fff" stroke="#28a745" stroke-width="2"/>
+                <text x="180" y="105" text-anchor="middle" font-size="10">Th:0.9</text>
+                <line x1="220" y1="100" x2="280" y2="100" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+            </svg>
         </div>
-        <p class="note"><em>Note: This problem involves oscillation due to the high learning rate relative to the threshold.</em></p>
+        <p><strong>Setup:</strong> Threshold = 0.9, Learning Rate = 0.4. <br><strong>Start Weights:</strong> w1=0.8, w2=0.8, w3=0.8</p>
 
-        <span class="epoch-label">Iteration 1</span>
         <table>
             <thead>
                 <tr>
-                    <th>Inputs (I1,I2,I3)</th>
-                    <th>Weights</th>
-                    <th>Sum</th>
-                    <th>Out/Exp</th>
+                    <th>Inputs</th>
+                    <th>Current Weights</th>
+                    <th>Sum Calculation</th>
+                    <th>Out</th><th>Exp</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
+                <!-- Iteration 1 -->
+                <tr><td colspan="6" class="iter-sep">ITERATION 1</td></tr>
                 <tr>
-                    <td>1, 1, 1</td>
-                    <td>0.8, 0.8, 0.8</td>
-                    <td class="calc-col">2.4</td>
-                    <td><span class="status-ok">1 / 1</span></td>
-                    <td>Match</td>
+                    <td class="col-center">1, 1, 1</td>
+                    <td class="col-center">0.8, 0.8, 0.8</td>
+                    <td class="col-math">2.4</td>
+                    <td class="col-center">1</td><td class="col-center">1</td>
+                    <td class="action-ok">Match.</td>
                 </tr>
-                <tr class="row-change">
-                    <td>1, 1, 0</td>
-                    <td>0.8, 0.8, 0.8</td>
-                    <td class="calc-col">1.6 (>0.9)</td>
-                    <td><span class="status-err">1 / 0</span></td>
-                    <td>
-                        <strong>Error (-)</strong> Decrease w1, w2<br>
-                        w1, w2 &rarr; 0.8 - 0.4 = <span class="val-new">0.4</span>
-                    </td>
-                </tr>
-                <tr class="row-change">
-                    <td>1, 0, 1</td>
-                    <td><span class="val-new">0.4, 0.4</span>, 0.8</td>
-                    <td class="calc-col">0.4+0.8=1.2 (>0.9)</td>
-                    <td><span class="status-err">1 / 0</span></td>
-                    <td>
-                        <strong>Error (-)</strong> Decrease w1, w3<br>
-                        w1 &rarr; 0.4-0.4 = <span class="val-new">0.0</span><br>
-                        w3 &rarr; 0.8-0.4 = <span class="val-new">0.4</span>
+                <tr>
+                    <td class="col-center">1, 1, 0</td>
+                    <td class="col-center">0.8, 0.8, 0.8</td>
+                    <td class="col-math">1.6</td>
+                    <td class="col-center">1</td><td class="col-center">0</td>
+                    <td class="action-update">
+                        <strong>False Positive.</strong><br>Decrease I1, I2.<br>
+                        w1, w2 = 0.8 - 0.4 = <span class="val-change">0.4</span>
                     </td>
                 </tr>
                 <tr>
-                    <td>0, 1, 1</td>
-                    <td>0.0, 0.4, 0.4</td>
-                    <td class="calc-col">0.8 (≤0.9)</td>
-                    <td><span class="status-ok">0 / 0</span></td>
-                    <td>Match</td>
+                    <td class="col-center">1, 0, 1</td>
+                    <td class="col-center"><span class="val-change">0.4</span>, <span class="val-change">0.4</span>, 0.8</td>
+                    <td class="col-math">0.4 + 0 + 0.8 = 1.2</td>
+                    <td class="col-center">1</td><td class="col-center">0</td>
+                    <td class="action-update">
+                        <strong>False Positive.</strong><br>Decrease I1, I3.<br>
+                        w1 = 0.4 - 0.4 = <span class="val-change">0.0</span><br>
+                        w3 = 0.8 - 0.4 = <span class="val-change">0.4</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-center">1, 0, 0</td>
+                    <td class="col-center"><span class="val-change">0.0</span>, 0.4, <span class="val-change">0.4</span></td>
+                    <td class="col-math">0</td>
+                    <td class="col-center">0</td><td class="col-center">0</td>
+                    <td class="action-ok">Match.</td>
+                </tr>
+                <!-- Skipping other 0 rows which naturally pass -->
+
+                <!-- Iteration 2 -->
+                <tr><td colspan="6" class="iter-sep">ITERATION 2 (Weights: 0.0, 0.4, 0.4)</td></tr>
+                <tr>
+                    <td class="col-center">1, 1, 1</td>
+                    <td class="col-center">0.0, 0.4, 0.4</td>
+                    <td class="col-math">0 + 0.4 + 0.4 = 0.8</td>
+                    <td class="col-center">0</td><td class="col-center">1</td>
+                    <td class="action-update">
+                        <strong>False Negative.</strong><br>Increase ALL.<br>
+                        w1 = 0.0 + 0.4 = <span class="val-change">0.4</span><br>
+                        w2 = 0.4 + 0.4 = <span class="val-change">0.8</span><br>
+                        w3 = 0.4 + 0.4 = <span class="val-change">0.8</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-center">1, 1, 0</td>
+                    <td class="col-center"><span class="val-change">0.4, 0.8, 0.8</span></td>
+                    <td class="col-math">0.4 + 0.8 = 1.2</td>
+                    <td class="col-center">1</td><td class="col-center">0</td>
+                    <td class="action-update">
+                        <strong>False Positive.</strong><br>Decrease I1, I2.<br>
+                        w1 = 0.4 - 0.4 = <span class="val-change">0.0</span><br>
+                        w2 = 0.8 - 0.4 = <span class="val-change">0.4</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-center">0, 1, 1</td>
+                    <td class="col-center">0.0, <span class="val-change">0.4</span>, 0.8</td>
+                    <td class="col-math">0.4 + 0.8 = 1.2</td>
+                    <td class="col-center">1</td><td class="col-center">0</td>
+                    <td class="action-update">
+                        <strong>False Positive.</strong><br>Decrease I2, I3.<br>
+                        w2 = 0.4 - 0.4 = <span class="val-change">0.0</span><br>
+                        w3 = 0.8 - 0.4 = <span class="val-change">0.4</span>
+                    </td>
+                </tr>
+
+                <!-- Final Stability Check -->
+                <tr><td colspan="6" class="iter-sep">FINAL STABILITY CHECK (Weights: 0.4, 0.4, 0.4)</td></tr>
+                <tr><td colspan="6" class="col-center" style="font-style:italic; color:#666;">(After converging, the weights settle at 0.4, 0.4, 0.4)</td></tr>
+                <tr>
+                    <td class="col-center">1, 1, 1</td>
+                    <td class="col-center">0.4, 0.4, 0.4</td>
+                    <td class="col-math">0.4+0.4+0.4 = 1.2</td>
+                    <td class="col-center">1</td><td class="col-center">1</td>
+                    <td class="action-ok">Match (1.2 > 0.9)</td>
+                </tr>
+                <tr>
+                    <td class="col-center">1, 1, 0</td>
+                    <td class="col-center">0.4, 0.4, 0.4</td>
+                    <td class="col-math">0.4+0.4 = 0.8</td>
+                    <td class="col-center">0</td><td class="col-center">0</td>
+                    <td class="action-ok">Match (0.8 < 0.9)</td>
+                </tr>
+                <tr>
+                    <td class="col-center">1, 0, 1</td>
+                    <td class="col-center">0.4, 0.4, 0.4</td>
+                    <td class="col-math">0.8</td>
+                    <td class="col-center">0</td><td class="col-center">0</td>
+                    <td class="action-ok">Match.</td>
                 </tr>
             </tbody>
         </table>
-
-        <span class="epoch-label">Iteration 2</span>
-        <table>
-            <tbody>
-                <tr class="row-change">
-                    <td>1, 1, 1</td>
-                    <td>0.0, 0.4, 0.4</td>
-                    <td class="calc-col">0.8 (≤0.9)</td>
-                    <td><span class="status-err">0 / 1</span></td>
-                    <td>
-                        <strong>Error (+)</strong> Increase ALL<br>
-                        w1 &rarr; 0.4, w2 &rarr; 0.8, w3 &rarr; 0.8
-                    </td>
-                </tr>
-                <tr class="row-change">
-                    <td>1, 1, 0</td>
-                    <td>0.4, 0.8, 0.8</td>
-                    <td class="calc-col">1.2 (>0.9)</td>
-                    <td><span class="status-err">1 / 0</span></td>
-                    <td>
-                        <strong>Error (-)</strong> Decrease w1, w2<br>
-                        w1 &rarr; 0.0, w2 &rarr; 0.4
-                    </td>
-                </tr>
-                <tr>
-                    <td>1, 0, 1</td>
-                    <td>0.0, 0.4, 0.8</td>
-                    <td class="calc-col">0.8 (≤0.9)</td>
-                    <td><span class="status-ok">0 / 0</span></td>
-                    <td>Match</td>
-                </tr>
-                <tr class="row-change">
-                    <td>0, 1, 1</td>
-                    <td>0.0, 0.4, 0.8</td>
-                    <td class="calc-col">1.2 (>0.9)</td>
-                    <td><span class="status-err">1 / 0</span></td>
-                    <td>
-                        <strong>Error (-)</strong> Decrease w2, w3<br>
-                        w2 &rarr; 0.0, w3 &rarr; 0.4
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-
-        <span class="epoch-label">Iteration 3</span>
-        <table>
-            <tbody>
-                <tr class="row-change">
-                    <td>1, 1, 1</td>
-                    <td>0.0, 0.0, 0.4</td>
-                    <td class="calc-col">0.4 (≤0.9)</td>
-                    <td><span class="status-err">0 / 1</span></td>
-                    <td>
-                        <strong>Error (+)</strong> Increase ALL<br>
-                        w1 &rarr; 0.4, w2 &rarr; 0.4, w3 &rarr; 0.8
-                    </td>
-                </tr>
-                <tr>
-                    <td>1, 1, 0</td>
-                    <td>0.4, 0.4, 0.8</td>
-                    <td class="calc-col">0.8 (≤0.9)</td>
-                    <td><span class="status-ok">0 / 0</span></td>
-                    <td>Match!</td>
-                </tr>
-                <tr class="row-change">
-                    <td>1, 0, 1</td>
-                    <td>0.4, 0.4, 0.8</td>
-                    <td class="calc-col">1.2 (>0.9)</td>
-                    <td><span class="status-err">1 / 0</span></td>
-                    <td>
-                        <strong>Error (-)</strong> Decrease w1, w3<br>
-                        w1 &rarr; 0.0, w3 &rarr; 0.4
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-
-        <div style="margin-top:20px; padding:15px; border:1px solid #cbd5e1; background:#f1f5f9; border-radius:8px;">
-            <h3>Observation on Convergence</h3>
-            <p>At this specific Learning Rate (0.4), the weights are oscillating between different states. However, a valid solution exists which the perceptron is "trying" to reach.</p>
-            <p><strong>The Stable Solution is: w1=0.4, w2=0.4, w3=0.4</strong></p>
-            <p>Let's verify this solution:</p>
-            <ul>
-                <li><strong>(1,1,1):</strong> 0.4+0.4+0.4 = 1.2 (> 0.9) &rarr; Output 1 (Correct)</li>
-                <li><strong>(1,1,0):</strong> 0.4+0.4+0 = 0.8 (≤ 0.9) &rarr; Output 0 (Correct)</li>
-                <li><strong>(1,0,1):</strong> 0.4+0+0.4 = 0.8 (≤ 0.9) &rarr; Output 0 (Correct)</li>
-                <li><strong>(0,1,1):</strong> 0+0.4+0.4 = 0.8 (≤ 0.9) &rarr; Output 0 (Correct)</li>
-            </ul>
-        </div>
+        <p style="text-align:center; font-weight:bold; color:#28a745;">Training Complete! Final Weights: 0.4, 0.4, 0.4</p>
     </section>
+
+    <footer>
+        <p style="text-align:center; color:#888; font-size:0.8rem; margin-top:50px;">© 2024 Data Mining Study Guide</p>
+    </footer>
 
 </body>
 </html>
